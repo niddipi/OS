@@ -65,6 +65,7 @@ public class SYSTEM
 		
 		Input_spooling inp_spool = new Input_spooling(); 
 		inp_spool.InputSpool(args[0]);
+		System.out.println("END");
 		new Disk().Disk_display();
 		//loader.Loader_func(args[0],1);
 		//new Memory().display_mem();
@@ -93,8 +94,8 @@ public class SYSTEM
 			util.value = -1;
 		}	
 		Output_Spooling output_spool = new Output_Spooling();
-		output_spool.Output_spool(); 	
-	}*/
+		output_spool.Output_spool();*/ 	
+	}
 
 
 }

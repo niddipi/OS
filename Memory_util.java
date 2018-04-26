@@ -11,11 +11,11 @@ import java.io.*;
 public class Memory_util{
 
 public static int no_of_jobs = 1;
-public static int Memory_available = 32;
+public static int Memory_Available = 32;
 
 public static int[] fmbv = new int[32]; 
 public static int id = 0; 
-public static PCB[] pcb = PCB.PCBSet(1);
+public static PCB[] pcb = PCB.PCBSet(100);
 
 
 /***Initializes FMBV Vector****/

@@ -13,6 +13,11 @@ import java.io.*;
 public class Input_spooling{
 
    static int TOTAL_DISK_WCOUNT = 32*8*8;
+   
+   static FileInputStream fstream = null;
+   static BufferedReader br = null;
+   static int save_load_address = 0;
+   
    Error_Handler Er = new Error_Handler();
    Memory_util m_util = new Memory_util();
 	
@@ -46,31 +51,38 @@ public class Input_spooling{
          try{
 	    
             int x =0;
+	    int size = 0;
             int id =0;
+	    int value =0;
             int check_size =0;
             String binary = null;
             String line   = null;
             CPU_util util = new CPU_util();
             boolean isNumeric = false;
             Disk disk = new Disk();
-            FileInputStream fstream = new FileInputStream(filename);
-            BufferedReader br = 
+            size =4;
+	    if(save_load_address == 0){
+            fstream = new FileInputStream(filename);
+            br = 
                new BufferedReader(new InputStreamReader(fstream));
-
+	    }
             Memory_util m_util = new Memory_util();
 	    
-	    value = Memory_available;	
+	    value = m_util.Memory_Available;	
             while(value > 0){
 	    
-		value = Memory_available;	
+		value = m_util.Memory_Available;	
 
             x =0;
-            id =0;
+	    id = m_util.id;
             check_size =0;
             binary = null;
             line   = null;
             isNumeric = false;
-
+            if(value < Page_Allocation(size)){
+		break;
+	    }
+	  
             line = br.readLine();
 	    if(line == null)
             {
@@ -122,7 +134,7 @@ public class Input_spooling{
             Scanner scan1 = new Scanner(line);
             scan1.useDelimiter(" ");
             int JOBID         = 0;
-            int load_address  = 0;
+            int load_address  = save_load_address;
             int Start_address = 0;
             int SIZE          = 0;
             try{
@@ -150,7 +162,8 @@ public class Input_spooling{
             {	
                Er.Error_Handler_func("INVALID_PROGRAM_SIZE_GIVEN");
             }
-	    id = m_util.id;
+	    size = SIZE/8;
+	    load_address  = save_load_address;
 	    m_util.id++;
 	    m_util.pcb[id].int_jobid = id;
             m_util.pcb[id].Prog_seg_size  = SIZE;
@@ -173,12 +186,10 @@ public class Input_spooling{
             }
 
             m_util.pcb[0].trace_flag = Integer.parseInt(trace_flag); 
+	    
 
             disk.check_avail_space(SIZE);			
 
-            load_address = load_address+1;
-
-            load_address = 0;
 
             while ((line = br.readLine()) != null){
                try{
@@ -316,19 +327,16 @@ public class Input_spooling{
                   {
                      Er.Error_Handler_func("INVALID_INPUT_FORMAT");
                   }
-		  System.out.println("line2 "+line2+"line "+line);
                   check_size = check_size+(line.length()/4);
                }
 
                disk.Disk_func("Write",load_address,line);
-	       System.out.println("Input_seg_size "+Input_seg_size+"check_size "+check_size);
                if(line.equals("**FIN")){
                   break;
                }
                x++;
 
             }
-	    System.out.println("Input_seg_size "+Input_seg_size+"check_size "+check_size);
                if(check_size != Input_seg_size)
                {
                   Er.Error_Handler_func("CONFLICT_NO_OF_WORDS_FOR_INPUT_SEGMENT");
@@ -341,6 +349,7 @@ public class Input_spooling{
             x = 0;
             check_size = 0; 
             load_address = load_address+1;
+/*
             if(!line.equals("**OUTPUT") && !line.equals("**FIN"))
             {	
 
@@ -403,7 +412,8 @@ public class Input_spooling{
             if(line == null)
             {	
                Er.Error_Handler_func("**FIN_IS_MISSING");
-            }	
+            }	*/
+	    save_load_address = load_address;
 
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+Input_seg_last.length()/4;
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+Output_seg_size%8;
@@ -413,10 +423,7 @@ public class Input_spooling{
             m_util.pcb[id].output_start_address = load_address+1;	
 		
 	    m_util.Memory_Available = 
-				m_util.Memory_Available -
-				 	(Input_seg_size+
-					Output_seg_size+
-					m_util.pcb[id].Prog_seg_size);
+					m_util.Memory_Available-Page_Allocation(size); 
 	 }
          }catch(IOException e){
 
