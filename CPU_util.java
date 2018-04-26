@@ -24,22 +24,17 @@ public class CPU_util{
 	public static String  OP = null;
 	public static int value = -1;
 	
-//	public static int Start_address = -1;
 
 	public static int id =0;
 	
 	public static int address = 0;
 	public static int IO_CLOCK=0;
-//	public static int JOBID=0;
-	//public static int trace_flag=0;
 	public static int IR_val=0;
 	public static String IR=null;
 
-	public static int[] READY_QUEUE = new int[1];
 		
 	public static int TOS_Prev=-1;
 	public static int TOS_Val_Prev=0;
-	//public static int EA_Prev=-1;
 	public static int EA_Val_Prev=0;
 
 	

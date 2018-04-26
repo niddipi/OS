@@ -15,7 +15,7 @@ public static int Memory_Available = 32;
 
 public static int[] fmbv = new int[32]; 
 public static int id = 0; 
-public static PCB[] pcb = PCB.PCBSet(100);
+public static PCB[] pcb = null;
 
 
 /***Initializes FMBV Vector****/
@@ -27,12 +27,7 @@ public void Init_fmbv()
 			fmbv[i] = 0;
 			i++;
 		}
-		fmbv[5]  = 0;
-		fmbv[8]  = 0;
-		fmbv[10] = 0;
-		fmbv[17] = 0;
-		fmbv[20] = 0;
-		fmbv[31] = 0;
+		pcb = PCB.PCBSet(100);
 	}
 /***Debug Function to display
  FMBV vector*****/

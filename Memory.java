@@ -19,18 +19,18 @@ public class Memory{
    Memory_util m_util = new Memory_util();
    Fault_Handlers FH = new Fault_Handlers();
    Page_Replacement PR = new Page_Replacement();
-   static int id =0;
    /****Checks For PAge in Memory**/
    int Check_for_page(int address)
    {
+  	int id = util.id;
       int no_of_pages = 
-         m_util.pcb[0].Page_Mem_order[0].no_of_pages;
+         m_util.pcb[id].no_of_pages;
       int  i =0;
       int loc = address/8;
       int value =-1;
       while(i < no_of_pages)
       {
-         if(m_util.pcb[0].Page_Mem_order[i].Page_loc==loc)
+         if(m_util.pcb[id].Page_Mem_order[i].Page_loc==loc)
          {
             value = i;
             break;
@@ -55,6 +55,7 @@ public class Memory{
    throws IOException{
 
       util.PAGE_FAULT_CLOCK = util.PAGE_FAULT_CLOCK+10;
+  	int id = util.id;
       util.CLOCK = util.CLOCK+10;	
       if(address ==24)
       {
@@ -74,7 +75,7 @@ public class Memory{
       int index = 0;
       index  = (address/8);
 
-      int no_of_pages = m_util.pcb[0].no_of_pages; 
+      int no_of_pages = m_util.pcb[id].no_of_pages; 
       int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
       int output_pages = (m_util.pcb[id].Output_seg_size/8);
       int prog_pages = (m_util.pcb[id].Prog_seg_size/8);
@@ -101,19 +102,19 @@ public class Memory{
       {
          Address = FH.Prog_Page_Fault_Handler(0,no_of_pages);
 	 data = new Disk().disk[index];
-         temp = m_util.pcb[0].Page_Mem_order[Address].Page_loc;
+         temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
          if(temp < (prog_pages+Inp_pages-1) && temp >0){
-            m_util.pcb[0].Program_PMT[temp] = -1;}
-         m_util.pcb[0].Page_Mem_order[Address].Page_loc = index;
-         m_util.pcb[0].Page_Mem_order[Address].word_count = (data.length()/4);
+            m_util.pcb[id].Program_PMT[temp] = -1;}
+         m_util.pcb[id].Page_Mem_order[Address].Page_loc = index;
+         m_util.pcb[id].Page_Mem_order[Address].word_count = (data.length()/4);
       }
       else if(code == 1)
       {
          index = (prog_pages+Inp_pages)-1; 
-         if( m_util.pcb[0].Input_seg_info < 0)
+         if( m_util.pcb[id].Input_seg_info < 0)
          {
             FH.Input_Seg_Fault_Handler(0);
-            m_util.pcb[0].create_pmt(1,Inp_pages);
+            m_util.pcb[id].create_pmt(1,Inp_pages);
             Address = FH.Input_Page_Fault_Handler(0);
          }
          else
@@ -125,48 +126,48 @@ public class Memory{
 
 	 //System.out.println("data "+data+"Index "+index);
 	 
-         temp = m_util.pcb[0].Page_Mem_order[Address].Page_loc;
+         temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
 
-         m_util.pcb[0].Page_Mem_order[Address].word_count = 
+         m_util.pcb[id].Page_Mem_order[Address].word_count = 
             m_util.pcb[id].Input_seg_size;
          if(temp < 9 && temp >0){
-            m_util.pcb[0].Program_PMT[temp] = -1;
+            m_util.pcb[id].Program_PMT[temp] = -1;
          }
 
-         m_util.pcb[0].Page_Mem_order[Address].Page_loc = index;
+         m_util.pcb[id].Page_Mem_order[Address].Page_loc = index;
       }
       else{
 
          index = (prog_pages+Inp_pages+output_pages)-1; 
-         if(m_util.pcb[0].Output_seg_info < 0)
+         if(m_util.pcb[id].Output_seg_info < 0)
          {
             FH.Output_Seg_Fault_Handler(0);			
-            m_util.pcb[0].create_pmt(2,output_pages);
+            m_util.pcb[id].create_pmt(2,output_pages);
             Address = FH.Output_Page_Fault_Handler(0);
-            m_util.pcb[0].Page_Mem_order[Address].word_count = 
+            m_util.pcb[id].Page_Mem_order[Address].word_count = 
                m_util.pcb[id].Output_seg_size;
          }
          else
          {
             Address = FH.Output_Page_Fault_Handler(0);
          }
-         temp = m_util.pcb[0].Page_Mem_order[Address].Page_loc;
+         temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
 
 
-         m_util.pcb[0].Page_Mem_order[Address].Page_loc = index;
+         m_util.pcb[id].Page_Mem_order[Address].Page_loc = index;
       }
       if(temp < prog_pages && temp >0){
-         m_util.pcb[0].Program_PMT[temp] = -1;
+         m_util.pcb[id].Program_PMT[temp] = -1;
       }
       else if(temp >= prog_pages)
       {
-         m_util.pcb[0].Input_PMT[0] = -1;
+         m_util.pcb[id].Input_PMT[0] = -1;
       }
       else if(temp >= prog_pages && 
-            m_util.pcb[0].Output_seg_info>0)
+            m_util.pcb[id].Output_seg_info>0)
       {
 
-         m_util.pcb[0].Output_PMT[0] = -1;
+         m_util.pcb[id].Output_PMT[0] = -1;
       }
 
       int Mem_address = 0;
@@ -176,37 +177,37 @@ public class Memory{
       if(temp_loc != -1)
       {
          Mem_address = temp_loc;
-         m_util.pcb[0].Page_Mem_order[Address].Frame_base_address = temp_loc;
+         m_util.pcb[id].Page_Mem_order[Address].Frame_base_address = temp_loc;
       }
       else
       {
          Mem_address =		
-            m_util.pcb[0].Page_Mem_order[Address].Frame_base_address;
+            m_util.pcb[id].Page_Mem_order[Address].Frame_base_address;
 
       }
 
-      if(m_util.pcb[0].Page_Mem_order[Address].Dirty_bit == 1)
+      if(m_util.pcb[id].Page_Mem_order[Address].Dirty_bit == 1)
       {
 	System.out.println("Mem_address :"+Mem_address+" Address :"+Address);
          Write_back_to_disk(Mem_address*8,temp);
 	 new Disk().Disk_display();
-         m_util.pcb[0].Page_Mem_order[Address].Dirty_bit  = 0;
+         m_util.pcb[id].Page_Mem_order[Address].Dirty_bit  = 0;
       }
       if(code == 0)
       {
-         m_util.pcb[0].Program_PMT[index] = Mem_address;
+         m_util.pcb[id].Program_PMT[index] = Mem_address;
       }
       else if(code == 1)
       {
-         m_util.pcb[0].Input_PMT[0] = Mem_address;	
+         m_util.pcb[id].Input_PMT[0] = Mem_address;	
       }
       else
       {
-         m_util.pcb[0].Output_PMT[0] = Mem_address;	
-         m_util.pcb[0].Page_Mem_order[Address].Dirty_bit = 1;
+         m_util.pcb[id].Output_PMT[0] = Mem_address;	
+         m_util.pcb[id].Page_Mem_order[Address].Dirty_bit = 1;
 
       }
-      m_util.pcb[0].Page_frames[Address]      =  data;
+      m_util.pcb[id].Page_frames[Address]      =  data;
 
       if(code == 1)
       {
@@ -239,7 +240,7 @@ public class Memory{
       data = hexToBinary(data);
       Write(Mem_address,data);
       }
-      m_util.pcb[0].Page_Mem_order[Address].Ref_bit =1;
+      m_util.pcb[id].Page_Mem_order[Address].Ref_bit =1;
       PR.update_entry_value(0,Address);
       PR.update_Ref_bit(no_of_pages,Address);
       return Mem_address;
@@ -297,23 +298,24 @@ public class Memory{
     ****/
    int Virtual_to_Physical_addr(int address,int value)
    {
+  	int id = util.id;
       int PMT_base_add = 0;
-      int no_of_pages  = m_util.pcb[0].Page_Mem_order[0].no_of_pages;
+      int no_of_pages  = m_util.pcb[id].no_of_pages;
       int i  = 0;
       int  base_address = -1;
       while(i<no_of_pages)
       {
-         if(m_util.pcb[0].Page_Mem_order[PMT_base_add + i].
+         if(m_util.pcb[id].Page_Mem_order[PMT_base_add + i].
                Page_loc == address/8){
 
             base_address = 
-               m_util.pcb[0].Page_Mem_order[PMT_base_add + i].
+               m_util.pcb[id].Page_Mem_order[PMT_base_add + i].
                Frame_base_address;
 
                }
          i++;
       }
-      base_address 	 = m_util.pcb[0].Page_Mem_order[value].Frame_base_address*8;
+      base_address 	 = m_util.pcb[id].Page_Mem_order[value].Frame_base_address*8;
       int offset         = address%8;
       //System.out.println("base_address :"+base_address+" Offset :"+offset);
       
@@ -374,10 +376,11 @@ public class Memory{
    //This Function is called to Read or Write in the Memory
    String Memory_func(String task,int address,String data)
    {
+  	int id = util.id;
 
       int temp = address;
       String line=null;
-      int no_of_pages = m_util.pcb[0].Page_Mem_order[0].no_of_pages;
+      int no_of_pages = m_util.pcb[id].no_of_pages;
       if(task.equals("READ"))
       {
          if(!data.equals("Input")){
@@ -398,7 +401,7 @@ public class Memory{
 
             }
             else{
-               m_util.pcb[0].Page_Mem_order[value].Ref_bit =1;
+               m_util.pcb[id].Page_Mem_order[value].Ref_bit =1;
                address = Virtual_to_Physical_addr(address,value);
 	    System.out.println("address :"+address);
             }
@@ -422,8 +425,8 @@ public class Memory{
                return "stop";
             }
             else{
-               m_util.pcb[0].Page_Mem_order[value].Ref_bit =1;
-               m_util.pcb[0].Page_Mem_order[value].Dirty_bit =1;
+               m_util.pcb[id].Page_Mem_order[value].Ref_bit =1;
+               m_util.pcb[id].Page_Mem_order[value].Dirty_bit =1;
                address = Virtual_to_Physical_addr(address,value);
             }
          }
@@ -453,16 +456,17 @@ public class Memory{
     ********/
    public void memory_Stats()
    {
+  	int id = util.id;
       int address = 0;
-      int no_of_pages = m_util.pcb[0].no_of_pages;
+      int no_of_pages = m_util.pcb[id].no_of_pages;
       int value = 0;
       int count = 0;
       int W_count = 0;
       String data = null;
       for(int i = 0; i<no_of_pages ;i++)
       {
-         address = m_util.pcb[0].Page_Mem_order[i].Frame_base_address;
-         W_count += m_util.pcb[0].Page_Mem_order[i].word_count;
+         address = m_util.pcb[id].Page_Mem_order[i].Frame_base_address;
+         W_count += m_util.pcb[id].Page_Mem_order[i].word_count;
          address = address*8;
          value =0; 
          while(value <= 7)

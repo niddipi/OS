@@ -67,6 +67,7 @@ public class Input_spooling{
                new BufferedReader(new InputStreamReader(fstream));
 	    }
             Memory_util m_util = new Memory_util();
+	    m_util.Init_fmbv();	
 	    
 	    value = m_util.Memory_Available;	
             while(value > 0){
@@ -185,7 +186,7 @@ public class Input_spooling{
                Er.Error_Handler_func("INVALID_TRACE_FLAG");
             }
 
-            m_util.pcb[0].trace_flag = Integer.parseInt(trace_flag); 
+            m_util.pcb[id].trace_flag = Integer.parseInt(trace_flag); 
 	    
 
             disk.check_avail_space(SIZE);			

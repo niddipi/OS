@@ -51,10 +51,8 @@ public class Loader{
 		int id = 0; 
 		Disk DISK = new Disk();	
 
-			m_util.Init_fmbv();	
 
 			CPU_util util = new CPU_util();
-			new CPU_util().READY_QUEUE[0] = m_util.pcb[id].JOBID;
 
 			
 			int Inp_pages = (m_util.pcb[id].Input_seg_size/8)+1;

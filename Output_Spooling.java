@@ -16,7 +16,6 @@ public class Output_Spooling{
    public static int NATURE;
    public static String Err="";
    public static String Warn= null;
-   static int id =0;
    Memory_util m_util = new Memory_util();
 
    void Output_spool()
@@ -25,18 +24,19 @@ public class Output_Spooling{
             Memory memory = new Memory();
             Memory_util m_util = new Memory_util();
             memory.memory_Stats();
+   	 	int id =util.id;
 
             int i = 0;
-            int no_of_pages = m_util.pcb[0].no_of_pages;
+            int no_of_pages = m_util.pcb[id].no_of_pages;
             int address = 0;
             int index = 0;
             int dirty_bit = 0;
 
             while(i<no_of_pages){
 
-               address = m_util.pcb[0].Page_Mem_order[i].Frame_base_address;
-               index   = m_util.pcb[0].Page_Mem_order[i].Page_loc; 
-               dirty_bit =m_util.pcb[0].Page_Mem_order[i].Dirty_bit;
+               address = m_util.pcb[id].Page_Mem_order[i].Frame_base_address;
+               index   = m_util.pcb[id].Page_Mem_order[i].Page_loc; 
+               dirty_bit =m_util.pcb[id].Page_Mem_order[i].Dirty_bit;
                if(dirty_bit == 1)
                {
                   memory.Write_back_to_disk(address,index);
@@ -57,6 +57,7 @@ public class Output_Spooling{
          try{
             FileWriter fw = 
                new FileWriter("output_file.txt",true);
+   	    int id =util.id;
             String str = "";
             if(NATURE == 0)
             {
@@ -74,23 +75,23 @@ public class Output_Spooling{
             {
                str1 = str1+"Warnings: "+Warn+"\n";
             }
-            //if(PCB.OUTPUT != null)
-           // {
+              if(PCB.INPUT != null)
+              {
                str1=str1+"INPUT(binary): "+PCB.INPUT+"\n";	
-           // }
-           // else
-           // {
-           //    str1=str1+"INPUT: "+"NO AVAILABLE INPUT"+"\n";	
-           // }
+              }
+              else
+              {
+                str1=str1+"INPUT: "+"NO AVAILABLE INPUT"+"\n";	
+             }
 
-           // if(PCB.OUTPUT != null)
-           // {
+              if(PCB.OUTPUT != null)
+             {
                str1=str1+"OUTPUT(binary): "+PCB.OUTPUT+"\n";	
-           // }
-           // else
-           // {
-            //   str1=str1+"OUTPUT: "+"NO AVAILABLE OUTPUT"+"\n";	
-           // }
+             }
+             else
+              {
+                str1=str1+"OUTPUT: "+"NO AVAILABLE OUTPUT"+"\n";	
+             }
             str1=str1+"Nature of Termination: "+str+"\n";
             str1=str1+"Clock(HEX)                : ";
             str1=str1+Integer.toHexString(util.CLOCK)+"\n";
