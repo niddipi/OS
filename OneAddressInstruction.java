@@ -148,15 +148,15 @@ public class OneAddressInstruction{
          case "01111":
             //BR Opcode
 	    System.out.println("BR");
-            m_util.pcb[id].PC = m_util.pcb[id].EA;
+            util.PC = util.EA;
             break;
          case "10000":
             //BRT Opcode
 	    System.out.println("BRT");
             if(SO.Stack[SO.TOS] == 1)
             {
-               m_util.pcb[id].PC = m_util.pcb[id].EA;
-	       System.out.println("m_util.pcb[id].EA :"+m_util.pcb[id].EA);
+               util.PC = util.EA;
+	       System.out.println("util.EA :"+util.EA);
             }
             SO.TOS = SO.TOS-1;
             break;
@@ -166,15 +166,15 @@ public class OneAddressInstruction{
 
             if(SO.Stack[SO.TOS] == 0)
             {
-               m_util.pcb[id].PC = m_util.pcb[id].EA;
+               util.PC = util.EA;
             }
             SO.TOS = SO.TOS-1;
             break;
          case "10010":
             //CALL Opcode
 	    System.out.println("CALL");
-            SO.PUSH(m_util.pcb[id].PC);
-            m_util.pcb[id].PC = m_util.pcb[id].EA; 
+            SO.PUSH(util.PC);
+            util.PC = util.EA; 
             break;
          case "10011":
             //RD Opcode
@@ -195,7 +195,8 @@ public class OneAddressInstruction{
 	    System.out.println("POP");
             int val = SO.POP();
             String bin = util.twos_compl(val);
-            memory.Memory_func("WRITE",m_util.pcb[id].EA,util.twos_compl(val));
+	    System.out.println("TTTOS :"+SO.TOS);
+            memory.Memory_func("WRITE",util.EA,util.twos_compl(val));
             break;
          case "11000":
             //HLT Opcode

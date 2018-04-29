@@ -17,7 +17,8 @@ public class Input_spooling{
    static FileInputStream fstream = null;
    static BufferedReader br = null;
    static int save_load_address = 0;
-   
+   static  int check_size =0;
+   Loader loader = new Loader(); 
    Error_Handler Er = new Error_Handler();
    Memory_util m_util = new Memory_util();
 	
@@ -45,6 +46,15 @@ public class Input_spooling{
          return 6;
       }
    }
+   void check_available_disk(int size){
+
+      int r = size;	
+      Disk disk = new Disk();
+      if((disk.available_space - save_load_address)<r)
+	{
+		save_load_address =0;
+	}
+  }
 
    void InputSpool(String filename)
          throws IOException,NumberFormatException,NoSuchElementException{
@@ -54,40 +64,37 @@ public class Input_spooling{
 	    int size = 0;
             int id =0;
 	    int value =0;
-            int check_size =0;
             String binary = null;
             String line   = null;
             CPU_util util = new CPU_util();
             boolean isNumeric = false;
             Disk disk = new Disk();
-            size =4;
 	    if(save_load_address == 0){
             fstream = new FileInputStream(filename);
             br = 
                new BufferedReader(new InputStreamReader(fstream));
 	    }
-            Memory_util m_util = new Memory_util();
-	    m_util.Init_fmbv();	
 	    
 	    value = m_util.Memory_Available;	
             while(value > 0){
 	    
-		value = m_util.Memory_Available;	
-
+	    value = m_util.Memory_Available;	
             x =0;
 	    id = m_util.id;
-            check_size =0;
+	    m_util.pcb[id].int_jobid = m_util.id;
             binary = null;
             line   = null;
             isNumeric = false;
-            if(value < Page_Allocation(size)){
+            if(value < Page_Allocation(check_size)){
 		break;
 	    }
 	  
             line = br.readLine();
 	    if(line == null)
             {
-               Er.Error_Handler_func("INVALID_LOADER_FORMAT");
+		System.out.println("All jobs Done");
+		break;	       
+              // Er.Error_Handler_func("INVALID_LOADER_FORMAT");
             }
             String line1 = line;
             Scanner scan = new Scanner(line);
@@ -134,6 +141,7 @@ public class Input_spooling{
 
             Scanner scan1 = new Scanner(line);
             scan1.useDelimiter(" ");
+            check_size = 0; 
             int JOBID         = 0;
             int load_address  = save_load_address;
             int Start_address = 0;
@@ -164,6 +172,7 @@ public class Input_spooling{
                Er.Error_Handler_func("INVALID_PROGRAM_SIZE_GIVEN");
             }
 	    size = SIZE/8;
+	    check_available_disk((size+(Input_seg_size/8)+1));
 	    load_address  = save_load_address;
 	    m_util.id++;
 	    m_util.pcb[id].int_jobid = id;
@@ -172,12 +181,10 @@ public class Input_spooling{
             m_util.pcb[id].Output_seg_size= Output_seg_size;
 
             m_util.pcb[id].JOBID         = JOBID;
-            m_util.pcb[id].int_jobid     = m_util.id;
             m_util.pcb[id].Start_address = Start_address;	
 
-	    if(id == 0){
-            	m_util.pcb[id].PC = Start_address;
-		}
+      	    m_util.pcb[id].PC = Start_address;
+	    System.out.println("Start_address :"+Start_address);
 
             String trace_flag   = scan1.next();
             if((!trace_flag.equals("0")) && 
@@ -189,8 +196,7 @@ public class Input_spooling{
             m_util.pcb[id].trace_flag = Integer.parseInt(trace_flag); 
 	    
 
-            disk.check_avail_space(SIZE);			
-
+	    int base =0;
 
             while ((line = br.readLine()) != null){
                try{
@@ -222,9 +228,17 @@ public class Input_spooling{
                      x = 0;
                   }
                   check_size = check_size+(line.length()/4);
+		
+		  if(base == 0)
+                  {
+			  System.out.println("id :"+id+"Disk_base :"+load_address);
+			  System.out.println("line :"+line);
+                          m_util.pcb[id].Disk_base = load_address;
+                  }
                   disk.Disk_func("Write",load_address,line);
                   line1 = line;
                   x++;
+		  base++;
                }catch(NoSuchElementException e)
                {
                   Er.Error_Handler_func("UNNECESSARY_BLANK_LINES_PRESENT_IN_LOADER_FORMAT");
@@ -235,10 +249,11 @@ public class Input_spooling{
             {
                Er.Error_Handler_func("**INPUT_Is_Missing");		
             }	
-            if(check_size != SIZE)
+            if(check_size > SIZE)
             {
                Er.Error_Handler_func("CONFLICT_NO_OF_WORDS_FOR_PROGRAM_SEGMENT");
             }
+	    m_util.pcb[id].Prog_seg_size=check_size;
             String Prog_seg_last = disk.disk[load_address]; 
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+(Prog_seg_last.length()/4);
             int word_count = check_size;
@@ -338,100 +353,60 @@ public class Input_spooling{
                x++;
 
             }
+            word_count = word_count + check_size;
                if(check_size != Input_seg_size)
                {
                   Er.Error_Handler_func("CONFLICT_NO_OF_WORDS_FOR_INPUT_SEGMENT");
                }
             String Input_seg_last = disk.disk[load_address-1]; 
+            	check_size = 5; 
             if(line == null)
             {	
                Er.Error_Handler_func("**FIN_IS_MISSING");
             }	
             x = 0;
-            check_size = 0; 
             load_address = load_address+1;
-/*
-            if(!line.equals("**OUTPUT") && !line.equals("**FIN"))
-            {	
-
-               line1 = line;
-               scan = new Scanner(line1);
-               scan.useDelimiter(" ");
-               job = scan.next();
-               if(job.equals("**JOB"))
-               {
-                  Er.Error_Handler_func("MULTIPLE_**JOB_PRESENT");
-               }
-               if(job.equals("**INPUT"))
-               {
-                  Er.Error_Handler_func("MULTIPLE_**INPUT_PRESENT");
-               }
-
-            }
-            if(line.equals("**OUTPUT"))
-            {
-               while((line = br.readLine()) != null)
-               {
-                  if (x==2)
-                  {
-                     load_address = load_address+1;
-                     m_util.pcb[id].DISK_PAGE_COUNT = m_util.pcb[id].DISK_PAGE_COUNT+1;
-                     check_size = 0;
-                     x = 0;
-                  }
-                  line1 = line;
-                  scan = new Scanner(line1);
-                  scan.useDelimiter(" ");
-                  job = scan.next();
-                  if(job.equals("**JOB"))
-                  {
-                     Er.Error_Handler_func("MULTIPLE_**JOB_PRESENT");
-                  }
-                  if(job.equals("**INPUT"))
-                  {
-                     Er.Error_Handler_func("MULTIPLE_**INPUT_PRESENT");
-                  }
-                  if(job.equals("**OUTPUT"))
-                  {
-                     Er.Error_Handler_func("MULTIPLE_**OUTPUT_PRESENT");
-                  }
-                  if(line.equals("**FIN"))
-                  {
-                     break;
-                  }
-                  isNumeric = line.matches("\\p{XDigit}+");
-                  if(!isNumeric | (line.length()%4 != 0))
-                  {
-                     Er.Error_Handler_func("INVALID_OUTPUT");
-                  }
-
-                  disk.Disk_func("Write",load_address,line);
-                  x++;
-               }
-            }
-
-            if(line == null)
-            {	
-               Er.Error_Handler_func("**FIN_IS_MISSING");
-            }	*/
+            loader.Loader_func(filename,1,id);	    
 	    save_load_address = load_address;
 
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+Input_seg_last.length()/4;
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+Output_seg_size%8;
             m_util.pcb[id].DISK_FRAG = (24 - m_util.pcb[id].DISK_FRAG)/3;
-            word_count = word_count + check_size;
             m_util.pcb[id].TOTAL_DISK_USAGE = word_count;
             m_util.pcb[id].output_start_address = load_address+1;	
 		
-	    m_util.Memory_Available = 
-					m_util.Memory_Available-Page_Allocation(size); 
-	 }
-         }catch(IOException e){
+	    m_util.Memory_Available = m_util.Memory_Available-Page_Allocation(size); 
+/**disk Size calculation***/		
+		int no_of_pages = m_util.pcb[id].no_of_pages;
+	      int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
+	      int output_pages = (m_util.pcb[id].Output_seg_size/8);
+	      int prog_pages = (m_util.pcb[id].Prog_seg_size/8);
 
-            Er.Error_Handler_func("FILE_IS_EMPTY");
-         }
+	      if(m_util.pcb[id].Prog_seg_size%8 != 0)
+	      {
+		 prog_pages = prog_pages + 1;
+	      }
+	      if(m_util.pcb[id].Input_seg_size%8 != 0)
+	      {
+		 Inp_pages = Inp_pages + 1;
+	      }
+	      if(m_util.pcb[id].Output_seg_size%8 != 0)
+	      {
+		 output_pages = output_pages + 1;
+	      }
+	      m_util.pcb[id].Total_no_of_pages = (prog_pages + Inp_pages + output_pages);
+	      disk.available_space = disk.available_space - (prog_pages + Inp_pages);
+		
+		    if(id ==8){
+				System.out.println("m_util.Memory_Available :"+m_util.Memory_Available);
+			}
+		 }
+		 }catch(IOException e){
+
+		    Er.Error_Handler_func("FILE_IS_EMPTY");
+		 }
 
 
-   }
+	   }
 
 }

@@ -14,34 +14,43 @@ public class PCB{
 	int Input_seg_info =-1;
 	int Output_seg_info = -1;
 	int no_of_pages = 0;
+	int Total_no_of_pages = 0;
 	int PC =0;
+	int TOS = -1;
+	int TOS_Prev = -1;
+	int TOS_Val_Prev = -1;
+	int inp_count =0;
+	int Entry = 0;
+	int[] Stack = new int[7];
 	int[] frame_no;
 	int[] Program_PMT;
 	int[] Input_PMT;
 	int[] Output_PMT;	
 
-	Page[] Page_Mem_order;
 
 	int Start_address = -1;
 
-	public int  Prog_seg_size = -1;
-	public int  Input_seg_size = -1;
-	public int  Output_seg_size = -1;
-	public int  Trace_page = 0;
-	public String Page_Frames = "";
-
+	 int  Prog_seg_size = -1;
+	 int  Input_seg_size = -1;
+	 int  Output_seg_size = -1;
+	 int  Trace_page = 0;
+	 String Page_Frames = "";
+	int Disk_base = -1;
 
 	public int EA=0;
 	public int EA_Prev=0;
 
 	int trace_flag = 0;
+	int valid_pcb = 1;
 	double TOTAL_DISK_USAGE  = 0;	
 	double DISK_PAGE_COUNT   = 0;	
-	static String INPUT = "";
-	static String OUTPUT = null;
+	int  prog_seg_size = -1;
+	String INPUT = "";
+	String OUTPUT = null;
 	double DISK_FRAG  	= 0;	
 	int output_start_address = 0;	
 	int input_start_address  = 0;	
+	Page[] Page_Mem_order;
 	
 /*	
 	public double MEM_utilword_ratio = 0.0;
@@ -66,7 +75,7 @@ public class PCB{
 		frame_no = new int[no_pages];
 		no_of_pages = no_pages;
 		Page_frames = new String[no_pages];
-		Page_Mem_order = Page.PageSet(no_pages);
+	        Page_Mem_order = Page.PageSet(no_pages);
 	}
 
 	/**Creates PAge map table for each segment**/

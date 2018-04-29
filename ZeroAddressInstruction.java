@@ -13,14 +13,14 @@ import java.util.InputMismatchException;
 
 public class ZeroAddressInstruction {
    Memory_util m_util = new Memory_util();
-   public static int inp_count =-1 ;
+   public static int inp_count =0 ;
    public static int out_count =-1 ;
    public static String OUTPUT;
-   int id =0;
    int ZeroAddressInstruction(String opcode) throws IOException
    {
       Stack_operations SO = new Stack_operations();
       CPU_util util = new CPU_util();
+   	int id =util.id;
       Arithmetic_and_LogicalOP AL = new Arithmetic_and_LogicalOP();
       Error_Handler Er = new Error_Handler();
       int value = 0;
@@ -152,36 +152,35 @@ public class ZeroAddressInstruction {
 	    System.out.println("RD");
             short input = 0 ;
             try{
-               inp_count++;
-               if(inp_count > m_util.pcb[id].Input_seg_size)
-               {
-                  Er.Error_Handler_func("READING_BEYOND_END_OF_FILE");
-               }
-               if(m_util.pcb[0].Input_seg_info == -1)
+		/*
+               }*/
+		//int id = util.id;
+               if(m_util.pcb[id].Input_seg_info == -1)
                {
                   util.value =1;
+		  util.address = 0;
                   return 0;	
                }
+               if(inp_count >= m_util.pcb[id].Input_seg_size)
+               {
+                  Er.Error_Handler_func("READING_BEYOND_END_OF_FILE");
+	       }
 	       //System.out.println("util.address"+util.address);
 	       //System.out.println("util.pcb[0]"+m_util.pcb[0].Input_seg_info);
-		int count = inp_count - 1;
-		count  = m_util.pcb[0].Input_seg_info + count;
-               String bin  = new Memory().Memory_func("READ",
+		int count = m_util.pcb[id].inp_count;
+		count     = m_util.pcb[id].Input_seg_info + count;
+               String bin = new Memory().Memory_func("READ",
 						 count,"Input"); 
 		System.out.println("bin : "+bin);	
 	       //System.out.println("Input :"+bin);
                input = (short)Integer.parseInt(bin, 2); 
-               PCB.INPUT = PCB.INPUT+bin+"\n";
+               m_util.pcb[id].INPUT = m_util.pcb[id].INPUT+bin+"\n";
                SO.PUSH(input);	
+               m_util.pcb[id].inp_count++;
             }catch(InputMismatchException ex){
                Er.Error_Handler_func("INVALID_INPUT");
             }
             util.CLOCK = util.CLOCK+15;
-            if((util.CLOCK - util.OLD_CLOCK)>= 15)
-            {
-               util.OLD_CLOCK= util.CLOCK;
-               m_util.Display_Mem_Pages();
-            }
 
             util.IO_CLOCK = util.IO_CLOCK+15;
             value =1;
@@ -212,35 +211,30 @@ public class ZeroAddressInstruction {
                temp = temp.substring(temp.length()-16,
                      temp.length()); 	
                OUTPUT = temp;	
-	    	System.out.println("WR val :"+val+" OUTPUT:"+OUTPUT);
+	    	System.out.println("id :"+id+"WR val :"+val+" OUTPUT:"+OUTPUT);
 
-               int address = m_util.pcb[0].Output_seg_info;
-               new Memory().Write(address,OUTPUT); 
-               m_util.pcb[0].Output_seg_info = m_util.pcb[0].Output_seg_info+1;
+               int address = m_util.pcb[id].Output_seg_info;
+               //new Memory().Write(address,OUTPUT); 
+               m_util.pcb[id].Output_seg_info = m_util.pcb[id].Output_seg_info;
             //}
 
-            if(PCB.OUTPUT != null)
+            if(m_util.pcb[id].OUTPUT != null)
             {
-               PCB.OUTPUT = PCB.OUTPUT+"\t"+temp;
+               m_util.pcb[id].OUTPUT = m_util.pcb[id].OUTPUT+"\n"+temp;
             }
             else
             {
-               PCB.OUTPUT = temp+"\n";
+               m_util.pcb[id].OUTPUT = temp;
             }
             util.CLOCK = util.CLOCK+15;
             util.IO_CLOCK = util.IO_CLOCK+15;
-            if((util.CLOCK - util.OLD_CLOCK)>= 15)
-            {
-               util.OLD_CLOCK= util.CLOCK;
-               m_util.Display_Mem_Pages();
-            }
             value = 1;
             break;
 
          case "10101":
             //RTN Opcode Exection
 	    System.out.println("RTN");
-            m_util.pcb[id].PC = SO.POP();
+            util.PC = SO.POP();
             value = 1;
             break;
 

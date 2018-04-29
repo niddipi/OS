@@ -1,6 +1,5 @@
 public class Page_Replacement{
 	
-   public static int  Entry = 0; 
    CPU_util util = new CPU_util();
 
    int Page_Replacement_func(int Address){
@@ -72,20 +71,20 @@ public class Page_Replacement{
 
       Memory_util m_util = new Memory_util();	
    
-      m_util.pcb[id].Page_Mem_order[address].old = Entry + 1;
-      Entry = Entry +1;
+      m_util.pcb[id].Page_Mem_order[address].old = m_util.pcb[id].Entry + 1;
+      m_util.pcb[id].Entry = m_util.pcb[id].Entry +1;
 
    }
 
    public void update_Ref_bit(int no_of_pages,int address){
             int i =0;
    	int id = util.id;
-	
       	    Memory_util m_util = new Memory_util();	
+		no_of_pages = m_util.pcb[id].no_of_pages;	
 	
-	if(Entry > no_of_pages)
+	if(m_util.pcb[id].Entry > no_of_pages)
         {
-	    while(i < 6)
+	    while(i < no_of_pages)
 	    {
 		if(m_util.pcb[id].Page_Mem_order[i].Frame_base_address > 0){
 

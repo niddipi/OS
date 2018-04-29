@@ -16,8 +16,9 @@ public class Error_Handler{
 
 	public int Error_Handler_func(String error) 
 		throws IOException {
-
+		        CPU_util util = new CPU_util();
 			output_spool.Err = output_spool.Err+error;
+			util.schedule_type = 2;
 			switch(error)
 			{
 

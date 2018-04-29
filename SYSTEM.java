@@ -36,9 +36,11 @@ public class SYSTEM
 	public static void main(String[] args) throws IOException {
 	
 		CPU_util util = new CPU_util();
+		Scheduler sched = new Scheduler();
 		Error_Handler Er = new Error_Handler();
 		Memory m = new Memory();
 		Memory_util m_util = new Memory_util();
+	    	m_util.Init_fmbv();	
 		File f = new File("output_file.txt");
 		if(f.exists())
 		{
@@ -65,36 +67,57 @@ public class SYSTEM
 		
 		Input_spooling inp_spool = new Input_spooling(); 
 		inp_spool.InputSpool(args[0]);
+		m_util.filename = args[0];
 		System.out.println("END");
-		new Disk().Disk_display();
+		inp_spool.InputSpool(args[0]);
+		//m_util.Display_PCB();
 		//loader.Loader_func(args[0],1);
-		//new Memory().display_mem();
-		/*
+		System.out.println("END********");
+		//m_util.Display_PCB();
+		int value =0;
 		int id = util.id;
+		m_util.display_fmbv();
 		while(true)
 		{
-			cpu.CPU_func(m_util.pcb[id].PC,trace_switch);
-			if(util.value == 4)
-			{
+			value = sched.schedule_nextjob();
+			id = util.id;
+			System.out.println("JOB Scheduled :"+util.id);
+			if(value <0){
 				break;
 			}
-			System.out.println("SYSTEM :"+util.address);	
+			cpu.CPU_func(util.PC,trace_switch);
+			if(util.value == 4)
+			{
+				System.out.println("idddddddddddddd :"+id);
+			        sched.Save_pcb();	
+				Output_Spooling output_spool = new Output_Spooling();
+				output_spool.Output_spool(); 	
+				inp_spool.InputSpool(args[0]);
+				util.schedule_type = 2;
+				m_util.display_fmbv();
+			}
+			else if(util.value == 5){
+				util.schedule_type = 1;
+			}
+			else{
+			util.schedule_type = 0;
 			util.address = m.Page_not_found(util.address,(util.value));
 			if(util.value ==1)
 			{
-				m_util.pcb[0].Input_seg_info = util.address;
+				m_util.pcb[id].Input_seg_info = util.address;
 
 			}
 			else if(util.value ==2)
 			{
-				m_util.pcb[0].Output_seg_info =util.address;
+				m_util.pcb[id].Output_seg_info =util.address;
 
 			}
-			m_util.pcb[id].PC = m_util.pcb[id].PC - 1;
+                        }
+			if(util.schedule_type != 1){
+			util.PC = util.PC - 1;
+			}
 			util.value = -1;
 		}	
-		Output_Spooling output_spool = new Output_Spooling();
-		output_spool.Output_spool();*/ 	
 	}
 
 

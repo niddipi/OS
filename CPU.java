@@ -48,8 +48,8 @@ public class CPU {
 			{ 
 				start = i+3;
 				end   = i+7;
-				m_util.pcb[id].EA = -1;
-				m_util.pcb[id].EA_Prev = m_util.pcb[id].EA;
+				util.EA = -1;
+				util.EA_Prev = util.EA;
 				opcode = new String(new_inst,start,
 							end - start + 1);
 				value = 
@@ -58,6 +58,8 @@ public class CPU {
 				i = i+8;
 				
 				util.CLOCK = util.CLOCK+1;	
+				
+				util.CPUCLOCK = util.CPUCLOCK+1; 
 				if((util.CLOCK - util.OLD_CLOCK) >= 15)
 				{
 					util.OLD_CLOCK = util.CLOCK;	
@@ -78,23 +80,25 @@ public class CPU {
 			String DADDR  = new String(new_inst, 9, 15 - 9 + 1);
 			if (new_inst[6] == '1')
 			{
-				m_util.pcb[id].EA = Integer.parseInt(DADDR, 2);
-				m_util.pcb[id].EA = m_util.pcb[id].EA + 
+				util.EA = Integer.parseInt(DADDR, 2);
+				util.EA = util.EA + 
 				Integer.parseInt(
 				memory.Memory_func("READ",SO.Stack[SO.TOS],"Prog"),2);
 			}
 			else
 			{
-				m_util.pcb[id].EA = Integer.parseInt(DADDR, 2);
+				util.EA = Integer.parseInt(DADDR, 2);
 			}
-			m_util.pcb[id].EA_Prev = m_util.pcb[id].EA;
+			util.EA_Prev = util.EA;
 
 			OneAddressInstruction Exec_One_inst = 
 						new OneAddressInstruction();
 
 			value = 
-			   Exec_One_inst.OneAddressInstruction(opcode,m_util.pcb[id].EA);
+			   Exec_One_inst.OneAddressInstruction(opcode,util.EA);
 				util.CLOCK = util.CLOCK+4; 
+				util.CPUCLOCK = util.CPUCLOCK+4; 
+					
 				 if((util.CLOCK - util.OLD_CLOCK) >= 15)
                                 {
 					util.OLD_CLOCK= util.CLOCK; 	
@@ -114,16 +118,18 @@ public class CPU {
 		CPU_util util = new CPU_util();
 		String Instruction=null;
 		int value = 0;
-		int TOS =0;
-		int id  = 0;
-		m_util.pcb[id].PC = cpu_PC;
+		int TOS =-1;
+		int id  = util.id;
 		Stack_operations SO = new Stack_operations();
 		File_writer FWrite = new File_writer(); 
 		Memory memory = new Memory();
+		String filename = "";
 		while(true)
 		{
 			System.out.printf("\n\n\n");
-                        System.out.printf("PC %d\n",m_util.pcb[id].PC);
+			System.out.println("*********************************");
+                        System.out.println("id "+id);
+                        System.out.printf("PC %d\n",util.PC);
                         System.out.printf("TOS %d\n",SO.TOS);
                         TOS = SO.TOS;
                         while(TOS >=0)
@@ -131,20 +137,19 @@ public class CPU {
                                 System.out.printf("Stackvalue of %d:%d\n",TOS,SO.Stack[TOS]);
                                 TOS--;
                         }
-                        System.out.printf("\n\n\n");
 
-
+			/*
 			if(util.CLOCK > 1200)
 			{
 				Er.Error_Handler_func("INFINITE_LOOP_DETECTED");
-			}
+			}*/
 			util.value = -1;
-			cpu_PC = m_util.pcb[id].PC;
+			cpu_PC = util.PC;
 			util.IR = Fetch(cpu_PC);
 			System.out.println("util.OP "+util.IR+" cpu_PC"+cpu_PC);
 			if(util.IR.equals("stop"))
 			{
-				m_util.pcb[id].PC = m_util.pcb[id].PC+1;
+				util.PC = util.PC+1;
 				util.value =0;
 				break;
 			}
@@ -152,18 +157,41 @@ public class CPU {
 			if(SO.TOS >= 0){
 				util.TOS_Val_Prev = SO.Stack[SO.TOS];
 			}
-			
-			m_util.pcb[id].PC = m_util.pcb[id].PC+1;
+			if(id == 6){
+				new Memory().Display_Mem(m_util.pcb[id].Page_Mem_order[0].Frame_base_address);
+
+			}
+
+			util.PC = util.PC+1;
 			value = Decode_Execute(util.IR);
-			if(util.value >=0)
+			if(id == 0){
+				System.out.println("id == 4"+"Pages :"+m_util.pcb[id].no_of_pages);
+				m_util.Display_Mem_Pages();
+			}
+			System.out.println("*********************************");
+                        System.out.printf("\n\n\n");
+			 if(((util.CPUCLOCK - util.OLD_CPUCLOCK) >= 20)&& util.value == -1)
 			{
+				util.value = 5;
+				util.OLD_CPUCLOCK= util.CPUCLOCK; 	
+			}
+			if(util.value >=0 && util.value <4 )
+			{
+				util.CPUCLOCK = util.OLD_CPUCLOCK;
+				break;
+			}
+			filename = "trace_file"+id+m_util.pcb[id].JOBID+".txt";
+			System.out.println("filename :"+filename);
+			if(m_util.pcb[id].trace_flag ==1)
+			{
+				FWrite.write_tracefile(filename);
+			}
+			if(util.value >=4){
+				System.out.println("util.value :"+util.value);
+				util.CPUCLOCK = util.OLD_CPUCLOCK;
 				break;
 			}
 			
-			if(m_util.pcb[id].trace_flag ==1)
-			{
-				FWrite.write_tracefile();
-			}
 		}
 		return util.IR;		
 	}

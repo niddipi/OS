@@ -10,18 +10,19 @@ import java.io.*;
 
 public class Disk{
 
-	public static String[] disk = new String[256];
+	public static String[] disk = new String[2056];
 	
 	public static int BR = 0;//Base register
-	Error_Handler Er = new Error_Handler();
-	int available_space=256;	
-
+	//Error_Handler Er = new Error_Handler();
+	static int available_space=2056;	
+/*
 	void check_avail_space(int required_space){
 
 		if(required_space > available_space)
 		{
 			try{
-				Er.Error_Handler_func("INSUFFICIENT_AVAILABLE_DISK_SPACE");				
+				System.out.println("INSUFFICIENT_AVAILABLE_DISK_SPACE :"+required_space);
+				//Er.Error_Handler_func("INSUFFICIENT_AVAILABLE_DISK_SPACE");				
 
 			}
 			catch(Exception ex){
@@ -30,7 +31,7 @@ public class Disk{
 			
 		}	
 	}
-
+*/
 	//Write Function writes into disk
 	int Write(int address,String data){
 		try{

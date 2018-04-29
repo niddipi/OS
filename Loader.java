@@ -39,7 +39,7 @@ public class Loader{
 		}
 	}
 
-	int Loader_func(String filename,int trace_switch) throws IOException {
+	int Loader_func(String filename,int trace_switch,int id) throws IOException {
 
 		String line;
 		String binary=null;
@@ -48,7 +48,6 @@ public class Loader{
 		Memory_util m_util = new Memory_util();
 		Error_Handler Er = new Error_Handler();
 		Fault_Handlers FH = new Fault_Handlers();
-		int id = 0; 
 		Disk DISK = new Disk();	
 
 
@@ -59,37 +58,52 @@ public class Loader{
 			int output_pages = (m_util.pcb[id].Output_seg_size/8)+1;
 			int prog_pages = (m_util.pcb[id].Prog_seg_size/8)+1;
 			int no_of_pages = Page_Allocation(m_util.pcb[id].Prog_seg_size/8);
-			m_util.pcb[0].init(no_of_pages,prog_pages,Inp_pages,output_pages);
+			m_util.pcb[id].init(no_of_pages,prog_pages,Inp_pages,output_pages);
 
 			/*********Create Program Segment and Page
 			**********and Page map Table 		
 			********/
 			int temp = FH.Prog_Seg_Fault_Handler(0,no_of_pages);			
-			m_util.pcb[0].create_pmt(0,prog_pages);
+			m_util.pcb[id].create_pmt(0,prog_pages);
 			
-			m_util.pcb[0].Program_seg_info = temp;
-			int begin = m_util.pcb[id].Start_address/8;
+			m_util.pcb[id].Program_seg_info = temp;
+			int begin = m_util.pcb[id].Disk_base;
 			line = DISK.disk[begin];
 			int loc = 0;
 			//int load_address = m_util.Free();
 			
 			int k = 0;
+			int val =0;
 			while(k<no_of_pages)
 			{
-				m_util.pcb[0].frame_no[k] = m_util.Free();
+				val = m_util.Free();
+				if(val > 31)
+				{
+					System.out.println("Gone");
+					
+				}
+				m_util.pcb[id].frame_no[k] = val;
 				k++;
 			}
 			
 			int load_address =  m_util.check_avialable_page(id);
+			m_util.Display_PCB(id);
+			System.out.println("line :: "+line+"load_address :"+load_address);
 			 
 			binary 	=  hexToBinary(line);
 
 			memory.Memory_func("Write",load_address,binary);
-			m_util.pcb[0].Page_frames[temp]      =  line;
-			m_util.pcb[0].Page_Mem_order[temp].Frame_base_address = load_address; 
-			m_util.pcb[0].Page_Mem_order[temp].Page_loc = begin; 
-			m_util.pcb[0].Page_Mem_order[temp].old = 0;
-			m_util.pcb[0].Program_PMT[begin] = load_address;
+			if(load_address ==0 && (m_util.id >4))
+			{
+				m_util.k = 1;
+			}
+			 memory.Display_Mem(load_address);
+			m_util.pcb[id].Page_frames[temp]      =  line;
+			m_util.pcb[id].Page_Mem_order[temp].Frame_base_address = load_address; 
+			m_util.pcb[id].Page_Mem_order[temp].Page_loc = 0; 
+			m_util.pcb[id].Page_Mem_order[temp].old = 0;
+			m_util.pcb[id].Program_PMT[0] = load_address;
+			m_util.pcb[id].Program_seg_info = load_address;
 
 		return Start_address;
 	}	

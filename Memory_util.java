@@ -10,12 +10,18 @@ import java.io.*;
 
 public class Memory_util{
 
+   CPU_util util = new CPU_util();
+
 public static int no_of_jobs = 1;
 public static int Memory_Available = 32;
 
 public static int[] fmbv = new int[32]; 
 public static int id = 0; 
-public static PCB[] pcb = null;
+public static int k = -1; 
+
+public static int id_prev = 0; 
+public static String filename = null; 
+public static PCB[] pcb = PCB.PCBSet(150);
 
 
 /***Initializes FMBV Vector****/
@@ -27,16 +33,16 @@ public void Init_fmbv()
 			fmbv[i] = 0;
 			i++;
 		}
-		pcb = PCB.PCBSet(100);
 	}
 /***Debug Function to display
  FMBV vector*****/
 public void display_fmbv()
 	{
+		System.out.println("kellogs");
 		int i = 0;
-	  while(i<32)
+	  	while(i<32)
 		{
-			System.out.println(fmbv[i]);
+			System.out.printf("%d",fmbv[i]);
 			i++;
 		}
 	}
@@ -63,15 +69,15 @@ Check Available Page functions
 checks for available page in memory
 ************************************/
 
-int check_avialable_page(int id){
-	int no_of_pages = pcb[id].no_of_pages;
+int check_avialable_page(int id1){
+	int no_of_pages = pcb[id1].no_of_pages;
 	int k =0;
 	int value = -1;
 	while(k<no_of_pages){
 	 
-	if(pcb[id].frame_no[k] != -1){
-		value =pcb[id].frame_no[k];
-		pcb[id].frame_no[k] = -1;
+	if(pcb[id1].frame_no[k] != -1){
+		value =pcb[id1].frame_no[k];
+		pcb[id1].frame_no[k] = -1;
 		break;
 	}
 	k++;	
@@ -134,16 +140,33 @@ void Display_Mem_Pages(){
 	
 }
 */
+
+public void Display_PCB(int id1){
+
+//while(i< id1)
+//{
+	System.out.println("id :"+id1+"Disk_base :"+pcb[id1].Disk_base);
+	System.out.println("id :"+id1+"PC_value :"+pcb[id1].PC);
+        int no_of_pages = pcb[id1].no_of_pages;
+        for(int i =0;i<no_of_pages;i++){
+		 System.out.println("frames :"+pcb[id1].frame_no[i]);
+	}
+//}
+
+}
 void Display_Mem_Pages(){
-        int no_of_pages = pcb[0].no_of_pages;
+	int id =util.id;
+        int no_of_pages = pcb[id].no_of_pages;
 
         for(int i =0;i<no_of_pages;i++){
-        if(pcb[0].Page_Mem_order[i].Page_loc >= 0){
-  System.out.println("Page: "+pcb[0].Page_Mem_order[i].Page_loc+"  Frame-->"+pcb[0].Page_Mem_order[i].Frame_base_address);
+        if(pcb[id].Page_Mem_order[i].Page_loc >= 0){
+
+  System.out.println("Page: "+pcb[id].Page_Mem_order[i].Page_loc+"  Frame-->"+pcb[id].Page_Mem_order[i].Frame_base_address);
 
         }
         }
         System.out.println("======================");
 }
+
 
 }

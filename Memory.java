@@ -37,11 +37,6 @@ public class Memory{
          }
          i++;
       }
-      if(address ==24)
-      {
-	System.out.println("address "+address+" loc: "+loc+" value:"+value);
-        m_util. Display_Mem_Pages();
-      }
 	//System.out.println("Check_for_page address: "+value);
       return value;
    }
@@ -56,6 +51,12 @@ public class Memory{
 
       util.PAGE_FAULT_CLOCK = util.PAGE_FAULT_CLOCK+10;
   	int id = util.id;
+	int Base = m_util.pcb[id].Disk_base;
+	//Debugging method
+	if(Base == -1){
+		System.out.println("Base is not populated id:"+id);
+		Integer.parseInt(null, 2);
+	}
       util.CLOCK = util.CLOCK+10;	
       if(address ==24)
       {
@@ -92,8 +93,11 @@ public class Memory{
       {
          output_pages = output_pages + 1;
       }
-     if(index >= (Inp_pages+output_pages+prog_pages-1))
+	 System.out.println("Code :"+code+"Index "+index+" In"+(Inp_pages+output_pages+prog_pages));
+	
+     if((index > (Inp_pages+output_pages+prog_pages-1))&&(code !=1))
      {
+	     Integer.parseInt(null, 2);
 	     Er.Error_Handler_func("OUT_OF_RANGE_MEMORY_ACCESS");
      		
      }
@@ -101,7 +105,7 @@ public class Memory{
       if(code == 0)
       {
          Address = FH.Prog_Page_Fault_Handler(0,no_of_pages);
-	 data = new Disk().disk[index];
+	 data = new Disk().disk[Base+index];
          temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
          if(temp < (prog_pages+Inp_pages-1) && temp >0){
             m_util.pcb[id].Program_PMT[temp] = -1;}
@@ -116,15 +120,15 @@ public class Memory{
             FH.Input_Seg_Fault_Handler(0);
             m_util.pcb[id].create_pmt(1,Inp_pages);
             Address = FH.Input_Page_Fault_Handler(0);
+	    System.out.println("Address :"+Address);
          }
          else
          {
             Address = FH.Input_Page_Fault_Handler(0);
          }
-         Disk D = new Disk();
-         data = new Disk().disk[index];
-
-	 //System.out.println("data "+data+"Index "+index);
+         data = new Disk().disk[Base+index];
+		
+	 System.out.println("Inputdata "+data+"Index "+index);
 	 
          temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
 
@@ -177,6 +181,7 @@ public class Memory{
       if(temp_loc != -1)
       {
          Mem_address = temp_loc;
+	System.out.println("temp_loc :"+temp_loc);
          m_util.pcb[id].Page_Mem_order[Address].Frame_base_address = temp_loc;
       }
       else
@@ -189,7 +194,7 @@ public class Memory{
       if(m_util.pcb[id].Page_Mem_order[Address].Dirty_bit == 1)
       {
 	System.out.println("Mem_address :"+Mem_address+" Address :"+Address);
-         Write_back_to_disk(Mem_address*8,temp);
+         Write_back_to_disk(Mem_address*8,Base+temp);
 	 new Disk().Disk_display();
          m_util.pcb[id].Page_Mem_order[Address].Dirty_bit  = 0;
       }
@@ -216,6 +221,7 @@ public class Memory{
 	 String str = null;
          int x = 0;
          int Mem_add = Mem_address;
+	System.out.println("Mem_addressssssssssssss :"+Mem_address);
 	 while(count != 0)
 	{
               str = data.substring(0+(x * 4),4+(x * 4));
@@ -235,7 +241,7 @@ public class Memory{
       }
       
      if(code !=1){
-	System.out.println("data :"+data);
+	System.out.println("data :"+data+"code :"+code);
 	System.out.println("Mwwaddress :"+Mem_address);
       data = hexToBinary(data);
       Write(Mem_address,data);
@@ -325,7 +331,14 @@ public class Memory{
 
    //Write Function writes into memory
    int Write(int address,String data){
-      try{
+      //try{
+	/*
+	  if(address == 0 && m_util.k == 1 && util.id != 6){
+		System.out.println("IIIII Gotcha :id "+util.id);
+		String n = null;
+		System.out.println(n);
+		Integer.parseInt(null, 2);
+	}*/
 
          if(data.length()>16)
          {
@@ -348,16 +361,16 @@ public class Memory{
                address++;
                x++;
             }
-            m_util.fmbv[init_add] = 1;
+            //m_util.fmbv[init_add] = 1;
          }
          else
          {
             memory[address] = data;
 
          }		
-      }
-      catch(Exception ex){
-      }
+      //}
+      //catch(Exception ex){
+      //}
       return 0;
    }
    //Read Function reads from memory
@@ -395,6 +408,9 @@ public class Memory{
                   m_util.pcb[id].Trace_page = 0;
                   return "  NA";
                }
+		if(address/8 == 13){
+		Integer.parseInt(null, 2);
+		}
                util.address = address;
                util.value =0;
                return "stop";
@@ -403,11 +419,20 @@ public class Memory{
             else{
                m_util.pcb[id].Page_Mem_order[value].Ref_bit =1;
                address = Virtual_to_Physical_addr(address,value);
-	    System.out.println("address :"+address);
+	    System.out.println("Memaddress :"+address);
             }
          }
          address = BR + address;
          line = Read(address);
+	if(line == null){
+	    System.out.println("address :"+address+"id :"+id+" Input_seg_info:"+m_util.pcb[id].Input_seg_info);
+		m_util.Display_Mem_Pages();
+		Integer.parseInt(null, 2);
+	}
+	else{
+		
+	    System.out.println("address :"+address+"id :"+id+" line:"+line);
+	}
          m_util.pcb[id].Trace_page = 0;
       }
       else
@@ -421,6 +446,9 @@ public class Memory{
             if(value == -1)
             {
                util.address = address;
+		if(address/8 == 13){
+		Integer.parseInt(null, 2);
+		}
                util.value =0;
                return "stop";
             }
@@ -498,5 +526,17 @@ public class Memory{
       util.MEM_utilframe_percent = Math.round(a*100)/100D;;
 
    }
+void Display_Mem(int add)
+{
+	add = add*8;
+	int i = 0;
+		System.out.println("$$$$$$$$$$$$$$");
+	while(i<8){
 
+		System.out.println(memory[add]);
+		add++;
+		i++;
+	}
+		System.out.println("$$$$$$$$$$$$$$");
+}
 }

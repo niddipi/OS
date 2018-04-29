@@ -9,10 +9,12 @@
 public class CPU_util{ 
 	//All required CPU global
 	//variables  
-//	public static int PC=0;
-//	public static int EA=0;
+	public static int PC=0;
+	public static int EA=0;
 	public static int CLOCK=0;
+	public static int CPUCLOCK=0;
 	public static int OLD_CLOCK=0;
+	public static int OLD_CPUCLOCK=0;
 	public static int PAGE_FAULT_CLOCK=0;
 	public static int SEG_FAULT_CLOCK=0;
 	public static double MEM_utilword_ratio = 0.0;
@@ -23,8 +25,9 @@ public class CPU_util{
 
 	public static String  OP = null;
 	public static int value = -1;
+	public static int JOBS_FINISH = -1;
 	
-
+	public static int schedule_type = -1;
 	public static int id =0;
 	
 	public static int address = 0;
@@ -34,6 +37,7 @@ public class CPU_util{
 
 		
 	public static int TOS_Prev=-1;
+	public static int EA_Prev=-1;
 	public static int TOS_Val_Prev=0;
 	public static int EA_Val_Prev=0;
 

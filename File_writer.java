@@ -16,8 +16,8 @@ Error_Handler e = new Error_Handler();
 	private static final String newLine = 
 			System.getProperty("line.separator");
 	
-	public synchronized void write_tracefile(){
-		String fileName = "trace_file.txt";
+	public synchronized void write_tracefile(String fileName){
+		//String fileName = "trace_file.txt";
 		PrintWriter printwriter = null;
 		int len = 0;
 		CPU_util util = new CPU_util();
@@ -51,7 +51,7 @@ Error_Handler e = new Error_Handler();
 			}
 			printwriter = new PrintWriter(
 				new FileOutputStream(fileName, true));
-			String PC = Integer.toHexString(m_util.pcb[id].PC);
+			String PC = Integer.toHexString(util.PC);
 			while (PC.length() < 2){
                                 PC = "0"+PC;
                         }
@@ -66,6 +66,8 @@ Error_Handler e = new Error_Handler();
 			while (BR.length() < 4){
                                 BR = "0"+BR;
                         }
+
+			/****************After Execution******************/
 			String TOS = "NA";
 			String TOS_val = "NA ";
 			if(SO.TOS >= 0)	
@@ -85,14 +87,14 @@ Error_Handler e = new Error_Handler();
 			}
 			String EA = " NA ";
 			String EA_val = " NA ";
-			if(m_util.pcb[id].EA >= 0)
+			if(util.EA >= 0)
 			{
-				EA = Integer.toHexString(m_util.pcb[id].EA);
+				EA = Integer.toHexString(util.EA);
 				while (EA.length() < 4){
 					EA = "0"+EA;
 				}
 				m_util.pcb[id].Trace_page = 1;
-				EA_val = memory.Memory_func("READ",m_util.pcb[id].EA,EA);
+				EA_val = memory.Memory_func("READ",util.EA,EA);
 				if(!EA_val.equals("  NA")){
 				int decimal1 = Integer.parseInt(EA_val,2);
 				EA_val = Integer.toHexString(decimal1);
@@ -106,6 +108,7 @@ Error_Handler e = new Error_Handler();
 					EA_val = EA_val.substring(len-4,len);
 				}}
 			}
+			/****Before Execution*****/
 			String TOS_prev = "NA";
 			String TOS_val_prev = "NA ";
 			if(util.TOS_Prev >= 0)	
@@ -125,15 +128,15 @@ Error_Handler e = new Error_Handler();
 			}
 			String EA_prev = " NA ";
 			String EA_val_prev = " NA ";
-			if(m_util.pcb[id].EA_Prev >= 0)
+			if(util.EA_Prev >= 0)
 			{
 
-				EA_prev = Integer.toHexString(m_util.pcb[id].EA_Prev);
+				EA_prev = Integer.toHexString(util.EA_Prev);
 				while (EA_prev.length() < 4){
 					EA_prev = "0"+EA_prev;
 				}
 				m_util.pcb[id].Trace_page = 1;
-				EA_val_prev = memory.Memory_func("READ",m_util.pcb[id].EA_Prev,"Prog");
+				EA_val_prev = memory.Memory_func("READ",util.EA_Prev,"Prog");
 				if(!EA_val_prev.equals("  NA")){
 				int decimalv = Integer.parseInt(EA_val_prev,2);
 				EA_val_prev = Integer.toHexString(decimalv);
