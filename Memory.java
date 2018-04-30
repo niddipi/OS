@@ -114,7 +114,14 @@ public class Memory{
       }
       else if(code == 1)
       {
-         index = (prog_pages+Inp_pages)-1; 
+	System.out.println("m_util.pcb[id].inp_count "+m_util.pcb[id].inp_count);
+	if(m_util.pcb[id].inp_count < 8){	
+         index = prog_pages+0; 
+	}
+	else
+	{
+		index = prog_pages+(m_util.pcb[id].inp_count/8);
+	}
          if( m_util.pcb[id].Input_seg_info < 0)
          {
             FH.Input_Seg_Fault_Handler(0);
@@ -128,13 +135,13 @@ public class Memory{
          }
          data = new Disk().disk[Base+index];
 		
-	 System.out.println("Inputdata "+data+"Index "+index);
+	 System.out.println("Inputdata "+data+"Index "+index+" Base :"+Base);
 	 
          temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
 
          m_util.pcb[id].Page_Mem_order[Address].word_count = 
             m_util.pcb[id].Input_seg_size;
-         if(temp < 9 && temp >0){
+         if(temp < prog_pages && temp >0){
             m_util.pcb[id].Program_PMT[temp] = -1;
          }
 
@@ -176,7 +183,6 @@ public class Memory{
 
       int Mem_address = 0;
       int temp_loc = m_util.check_avialable_page(id);  
-      //int temp_loc = m_util.Free();  
 
       if(temp_loc != -1)
       {
@@ -202,7 +208,6 @@ public class Memory{
       {
 	
 	 System.out.println("dataaa "+m_util.pcb[id].Program_PMT.length+"Index "+index);
-		
          m_util.pcb[id].Program_PMT[index] = Mem_address;
       }
       else if(code == 1)

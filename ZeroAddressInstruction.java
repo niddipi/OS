@@ -14,6 +14,7 @@ import java.util.InputMismatchException;
 public class ZeroAddressInstruction {
    Memory_util m_util = new Memory_util();
    public static int inp_count =0 ;
+   public static int in_count =8 ;
    public static int out_count =-1 ;
    public static String OUTPUT;
    int ZeroAddressInstruction(String opcode) throws IOException
@@ -166,10 +167,16 @@ public class ZeroAddressInstruction {
                   Er.Error_Handler_func("READING_BEYOND_END_OF_FILE");
 		  return 4;
 	       }
-	       //System.out.println("util.address"+util.address);
-	       //System.out.println("util.pcb[0]"+m_util.pcb[0].Input_seg_info);
 		int count = m_util.pcb[id].inp_count;
 		count     = m_util.pcb[id].Input_seg_info + count;
+               if(m_util.pcb[id].inp_count > in_count)
+               {
+                  util.value =1;
+		  util.address = 0;
+		  //util.inpvalue = 1;
+   		  in_count = in_count+8 ;
+                  return 0;	
+               }
                String bin = new Memory().Memory_func("READ",
 						 count,"Input"); 
 		System.out.println("bin : "+bin);	

@@ -97,7 +97,9 @@ public class Input_spooling{
 	    if(line == null)
             {
 		System.out.println("All jobs Done");
+		if(m_util.pcb[m_util.id - 1].valid_pcb == -1){
 		util.JOBS_FINISH = 1;
+		}
 		break;	       
               // Er.Error_Handler_func("INVALID_LOADER_FORMAT");
             }
@@ -458,6 +460,9 @@ public class Input_spooling{
 	   	     return -1;
                   }
                   check_size = check_size+(line.length()/4);
+		  if(check_size > 8){
+			load_address = load_address +1;
+		}
                }
 
                disk.Disk_func("Write",load_address,line);
@@ -498,7 +503,7 @@ public class Input_spooling{
             m_util.pcb[id].output_start_address = load_address+1;	
 		
 	    m_util.Memory_Available = m_util.Memory_Available-Page_Allocation(size); 
-/**disk Size calculation***/		
+	    /**disk Size calculation***/		
 		int no_of_pages = m_util.pcb[id].no_of_pages;
 	      int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
 	      int output_pages = (m_util.pcb[id].Output_seg_size/8);
