@@ -22,6 +22,9 @@ public class PCB{
 	int inp_count =0;
 	int Entry = 0;
 	int CLOCK =0;
+	int Arrival_time = 0;
+	int Departure_time = 0;
+	int PageFaultNo = 0;
 	int[] Stack = new int[7];
 	int[] frame_no;
 	int[] Program_PMT;

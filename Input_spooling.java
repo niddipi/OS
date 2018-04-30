@@ -92,6 +92,7 @@ public class Input_spooling{
             if(value < Page_Allocation(check_size)){
 		break;
 	    }
+	    m_util.pcb[id].Arrival_time =util.CPUCLOCK;
 	  
             line = br.readLine();
 	    if(line == null)

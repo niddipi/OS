@@ -39,6 +39,7 @@ public class Fault_Handlers{
 		Address_of_PMT = 
 			new Page_Replacement().Page_Replacement_func(Address_of_PMT);
 	}
+	 m_util.pcb[id].PageFaultNo =  m_util.pcb[id].PageFaultNo+1;
       return Address_of_PMT;
 
    }
@@ -74,6 +75,7 @@ public class Fault_Handlers{
                 Address_of_PMT = 
                         new Page_Replacement().Page_Replacement_func(Address_of_PMT);
         }
+	 m_util.pcb[id].PageFaultNo =  m_util.pcb[id].PageFaultNo+1;
       return Address_of_PMT;
 
    }
@@ -112,6 +114,7 @@ public class Fault_Handlers{
                         new Page_Replacement().Page_Replacement_func(Address_of_PMT);
          
         }
+	 m_util.pcb[id].PageFaultNo =  m_util.pcb[id].PageFaultNo+1;
       return Address_of_PMT;
 
 

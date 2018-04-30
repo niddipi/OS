@@ -173,16 +173,20 @@ public class ZeroAddressInstruction {
                {
                   util.value =1;
 		  util.address = 0;
-		  //util.inpvalue = 1;
    		  in_count = in_count+8 ;
                   return 0;	
                }
                String bin = new Memory().Memory_func("READ",
 						 count,"Input"); 
 		System.out.println("bin : "+bin);	
-	       //System.out.println("Input :"+bin);
                input = (short)Integer.parseInt(bin, 2); 
+		if(m_util.pcb[id].inp_count == 0){
                m_util.pcb[id].INPUT = m_util.pcb[id].INPUT+bin+"\n";
+		}
+		else
+		{
+               		m_util.pcb[id].INPUT = m_util.pcb[id].INPUT+"\t\t     "+bin+"\n";
+		}
                int er = SO.PUSH(input);	
 	      if(er == -1)
 		{
@@ -238,11 +242,11 @@ public class ZeroAddressInstruction {
 
             if(m_util.pcb[id].OUTPUT != null)
             {
-               m_util.pcb[id].OUTPUT = m_util.pcb[id].OUTPUT+"\n"+temp;
+               m_util.pcb[id].OUTPUT = m_util.pcb[id].OUTPUT+"\t\t      "+temp+"\n";
             }
             else
             {
-               m_util.pcb[id].OUTPUT = temp;
+               m_util.pcb[id].OUTPUT = temp+"\n";
             }
             util.CLOCK = util.CLOCK+15;
             util.IO_CLOCK = util.IO_CLOCK+15;

@@ -29,6 +29,7 @@ public class Output_Spooling{
             int address = 0;
             int index = 0;
             int dirty_bit = 0;
+		m_util.pcb[m_util.id-1].Departure_time =util.CPUCLOCK;
 
             while(i<no_of_pages){
 	       
@@ -140,7 +141,10 @@ public class Output_Spooling{
                 str1=str1+"id :"+m_util.pcb[id].int_jobid+
 				" OUTPUT: "+"NO AVAILABLE OUTPUT"+"\n";	
              }
-            str1=str1+"Nature of Termination: "+str+"\n";
+            str1=str1+"Nature of Termination      : "+str+"\n";
+            str1=str1+"Arrival Time(HEX)          : "+Integer.toHexString(m_util.pcb[id].Arrival_time)+"\n";
+            str1=str1+"Departure Time(HEX)        : "+Integer.toHexString(m_util.pcb[id].Departure_time)+"\n";
+            str1=str1+"Page Faults Generated (DEC): "+Integer.toHexString(m_util.pcb[id].PageFaultNo)+"\n";
 	/*
             str1=str1+"Clock(HEX)                : ";
             str1=str1+Integer.toHexString(util.CLOCK)+"\n";
