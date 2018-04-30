@@ -14,8 +14,6 @@ public class Output_Spooling{
 
    CPU_util util = new CPU_util();
    public static int NATURE;
-   public static String Err="";
-   public static String Warn= null;
    Memory_util m_util = new Memory_util();
 	Disk disk = new Disk();
    void Output_spool()
@@ -24,7 +22,7 @@ public class Output_Spooling{
             Memory memory = new Memory();
             Memory_util m_util = new Memory_util();
             memory.memory_Stats();
-   	 	int id =util.id;
+   	 	int id =util.Er_id;
 
             int i = 0;
             int no_of_pages = m_util.pcb[id].no_of_pages;
@@ -56,6 +54,7 @@ public class Output_Spooling{
                i++;
             }	
 	    m_util.Memory_Available = m_util.Memory_Available+no_of_pages;
+	   System.out.println("Output :");
 	    m_util.display_fmbv();
             outputFile();
 
@@ -79,12 +78,12 @@ public class Output_Spooling{
       no_of_pages = prog_pages+Inp_pages+output_pages;
       
       i = 0;
-	/*
-      while(i<m_util.pcb[id].Total_no_of_pages){
-	   disk.disk[Base+i] = null;	
+	if(Base != -1){
+      while(i<prog_pages+Inp_pages){
+	   disk.disk[Base+i] = "";	
+		i++;
 	}
-	*/
-	disk.available_space = disk.available_space + prog_pages+Inp_pages;	
+	}
         m_util.pcb[id].valid_pcb = -1;
 	    
          }catch(IOException e){
@@ -102,14 +101,14 @@ public class Output_Spooling{
                new FileWriter("output_file.txt",true);
    	    int id =util.id;
             String str = "";
-            if(NATURE == 0)
+            if(Memory_util.pcb[id].NATURE == 0)
             {
                str = str+"Normal";
             }
             else
             {
                str = str+"Abnormal";
-               str = str+": "+Err;
+               str = str+": "+Memory_util.pcb[id].Err;
             }
             String str1 = Memory_util.pcb[id].Page_Frames+"\n"; 
             str1 = str1+"JOBID(DECIMAL): ";
@@ -117,26 +116,29 @@ public class Output_Spooling{
 	    
             str1 = str1+"Int_JOBID(DECIMAL): ";
             str1=str1+m_util.pcb[id].int_jobid+"\n";
-            if(Warn != null)
+            if(Memory_util.pcb[id].Warn != null)
             {
-               str1 = str1+"Warnings: "+Warn+"\n";
+               str1 = str1+"Warnings: "+Memory_util.pcb[id].Warn+"\n";
             }
               if(m_util.pcb[id].INPUT != null)
               {
-               str1=str1+"INPUT(binary): "+m_util.pcb[id].INPUT+"\n";	
+               str1=str1+"id :"+m_util.pcb[id].int_jobid+" INPUT(binary): "+
+						m_util.pcb[id].INPUT+"\n";	
               }
               else
               {
-                str1=str1+"INPUT: "+"NO AVAILABLE INPUT"+"\n";	
+                str1=str1+"id :"+m_util.pcb[id].int_jobid+
+				"INPUT: "+"NO AVAILABLE INPUT"+"\n";	
              }
 
               if(m_util.pcb[id].OUTPUT != null)
              {
-               str1=str1+"OUTPUT(binary): "+m_util.pcb[id].OUTPUT+"\n";	
+               str1=str1+"id :"+m_util.pcb[id].int_jobid+" OUTPUT(binary): "+m_util.pcb[id].OUTPUT+"\n";	
              }
              else
               {
-                str1=str1+"OUTPUT: "+"NO AVAILABLE OUTPUT"+"\n";	
+                str1=str1+"id :"+m_util.pcb[id].int_jobid+
+				" OUTPUT: "+"NO AVAILABLE OUTPUT"+"\n";	
              }
             str1=str1+"Nature of Termination: "+str+"\n";
 	/*

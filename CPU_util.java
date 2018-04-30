@@ -29,6 +29,7 @@ public class CPU_util{
 	
 	public static int schedule_type = -1;
 	public static int id =0;
+	public static int Er_id = -1; 
 	
 	public static int address = 0;
 	public static int IO_CLOCK=0;

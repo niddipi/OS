@@ -21,12 +21,16 @@ public class PCB{
 	int TOS_Val_Prev = -1;
 	int inp_count =0;
 	int Entry = 0;
+	int CLOCK =0;
 	int[] Stack = new int[7];
 	int[] frame_no;
 	int[] Program_PMT;
 	int[] Input_PMT;
 	int[] Output_PMT;	
-
+	
+	String Err="";
+	String Warn=null;
+	int NATURE = 0;
 
 	int Start_address = -1;
 

@@ -37,10 +37,12 @@ public class SYSTEM
 	
 		CPU_util util = new CPU_util();
 		Scheduler sched = new Scheduler();
+		Output_Spooling output_spool = new Output_Spooling();
 		Error_Handler Er = new Error_Handler();
 		Memory m = new Memory();
 		Memory_util m_util = new Memory_util();
 	    	m_util.Init_fmbv();	
+		int val  = 0;
 		File f = new File("output_file.txt");
 		if(f.exists())
 		{
@@ -66,16 +68,24 @@ public class SYSTEM
 		}	
 		
 		Input_spooling inp_spool = new Input_spooling(); 
-		inp_spool.InputSpool(args[0]);
 		m_util.filename = args[0];
 		System.out.println("END");
-		inp_spool.InputSpool(args[0]);
-		//m_util.Display_PCB();
-		//loader.Loader_func(args[0],1);
-		System.out.println("END********");
-		//m_util.Display_PCB();
+		val = inp_spool.InputSpool(args[0]);
+		while(val != 0)
+		{
+			System.out.println("Neels");
+                        output_spool.Output_spool();
+			val = inp_spool.InputSpool(args[0]);
+		}
+		new Disk().Disk_display();
+		if(util.JOBS_FINISH == 1)
+		{
+			System.exit(0);
+		}
+		//m_util.Display_PCB(0);
 		int value =0;
 		int id = util.id;
+		util.schedule_type = -1;
 		m_util.display_fmbv();
 		while(true)
 		{
@@ -90,9 +100,16 @@ public class SYSTEM
 			{
 				System.out.println("idddddddddddddd :"+id);
 			        sched.Save_pcb();	
-				Output_Spooling output_spool = new Output_Spooling();
 				output_spool.Output_spool(); 	
-				inp_spool.InputSpool(args[0]);
+				val = inp_spool.InputSpool(args[0]);
+				while(val != 0)
+				{
+					System.out.println("Neelesh");
+					//Output_Spooling output_spool = new Output_Spooling();
+					output_spool.Output_spool();
+					val = inp_spool.InputSpool(args[0]);
+				}
+				 value =0;
 				util.schedule_type = 2;
 				m_util.display_fmbv();
 			}
@@ -112,6 +129,16 @@ public class SYSTEM
 				m_util.pcb[id].Output_seg_info =util.address;
 
 			}
+			else if(util.value == 4)
+                        {
+                                System.out.println("Hello :"+id);
+                                sched.Save_pcb();       
+                                output_spool.Output_spool();  
+                                inp_spool.InputSpool(args[0]);
+                                util.schedule_type = 2;
+                                m_util.display_fmbv();
+                        }
+			
                         }
 			if(util.schedule_type != 1){
 			util.PC = util.PC - 1;

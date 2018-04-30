@@ -20,7 +20,6 @@ public class CPU {
 		Memory memory = new Memory();
 		String Z = null;
 		return memory.Memory_func("READ",PC,"Prog");
-			
 	}
        	/***Decodes and Executes the instruction*****/ 
 	int Decode_Execute(String Instruction) throws IOException
@@ -126,6 +125,7 @@ public class CPU {
 		String filename = "";
 		while(true)
 		{
+			util.Er_id = util.id;
 			System.out.printf("\n\n\n");
 			System.out.println("*********************************");
                         System.out.println("id "+id);
@@ -138,13 +138,15 @@ public class CPU {
                                 TOS--;
                         }
 
-			/*
-			if(util.CLOCK > 1200)
-			{
-				Er.Error_Handler_func("INFINITE_LOOP_DETECTED");
-			}*/
+			
 			util.value = -1;
 			cpu_PC = util.PC;
+			if(m_util.pcb[id].CLOCK > 1200)
+			{
+				util.CLOCK = 0;
+				Er.Error_Handler_func("INFINITE_LOOP_DETECTED");
+			}
+			m_util.pcb[id].CLOCK++;
 			util.IR = Fetch(cpu_PC);
 			System.out.println("util.OP "+util.IR+" cpu_PC"+cpu_PC);
 			if(util.IR.equals("stop"))

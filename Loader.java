@@ -87,7 +87,7 @@ public class Loader{
 			}
 			
 			int load_address =  m_util.check_avialable_page(id);
-			m_util.Display_PCB(id);
+			//m_util.Display_PCB(id);
 			System.out.println("line :: "+line+"load_address :"+load_address);
 			 
 			binary 	=  hexToBinary(line);

@@ -75,6 +75,7 @@ public class Memory{
       String data = null;
       int index = 0;
       index  = (address/8);
+	System.out.println("Index :"+address+"id :"+id);
 
       int no_of_pages = m_util.pcb[id].no_of_pages; 
       int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
@@ -93,13 +94,12 @@ public class Memory{
       {
          output_pages = output_pages + 1;
       }
-	 System.out.println("Code :"+code+"Index "+index+" In"+(Inp_pages+output_pages+prog_pages));
+	 System.out.println("id :"+id+"Code :"+code+"Index "+index+" In"+(Inp_pages+output_pages+prog_pages));
 	
      if((index > (Inp_pages+output_pages+prog_pages-1))&&(code !=1))
      {
-	     Integer.parseInt(null, 2);
 	     Er.Error_Handler_func("OUT_OF_RANGE_MEMORY_ACCESS");
-     		
+	     return -1;     		
      }
 
       if(code == 0)
@@ -200,6 +200,9 @@ public class Memory{
       }
       if(code == 0)
       {
+	
+	 System.out.println("dataaa "+m_util.pcb[id].Program_PMT.length+"Index "+index);
+		
          m_util.pcb[id].Program_PMT[index] = Mem_address;
       }
       else if(code == 1)
@@ -227,6 +230,9 @@ public class Memory{
               str = data.substring(0+(x * 4),4+(x * 4));
               //System.out.println("str "+str);
 	      str = hexToBinary(str);
+	      if(str == null){
+			return -1;
+		}
 	      Write(Mem_add,str);
               Mem_add++;
 	      x++;
@@ -244,6 +250,10 @@ public class Memory{
 	System.out.println("data :"+data+"code :"+code);
 	System.out.println("Mwwaddress :"+Mem_address);
       data = hexToBinary(data);
+	if(data == null)
+	{
+		return 0;	
+	}
       Write(Mem_address,data);
       }
       m_util.pcb[id].Page_Mem_order[Address].Ref_bit =1;
@@ -284,10 +294,11 @@ public class Memory{
    }
 
    /****This function converts hex to string**/
-   String hexToBinary(String hex) {
-
+   String hexToBinary(String hex) throws IOException{
+	  String bin = null;
+	try{
 	//System.out.println("hex "+hex);
-      String bin = new BigInteger(hex, 16).toString(2);
+          bin = new BigInteger(hex, 16).toString(2);
 
       while (bin.length() < hex.length()*4){
          bin = "0"+bin;
@@ -296,6 +307,14 @@ public class Memory{
 
 	bin = "0000000000000000";
       }
+	}
+	catch(Exception e){
+	}
+	if(bin == null)
+	{
+	
+		Er.Error_Handler_func("INVALID_LOADER_FORMAT");
+	}
       return bin;
    }
 
@@ -330,8 +349,8 @@ public class Memory{
    }
 
    //Write Function writes into memory
-   int Write(int address,String data){
-      //try{
+   int Write(int address,String data)throws IOException{
+      try{
 	/*
 	  if(address == 0 && m_util.k == 1 && util.id != 6){
 		System.out.println("IIIII Gotcha :id "+util.id);
@@ -339,7 +358,14 @@ public class Memory{
 		System.out.println(n);
 		Integer.parseInt(null, 2);
 	}*/
+	/*	
+      int Total_no_of_pages = m_util.pcb[util.id].Total_no_of_pages;
+	if((address/8)>Total_no_of_pages){
+	     Er.Error_Handler_func("OUT_OF_RANGE_MEMORY_ACCESS");
+		return -1;
 
+	}	
+*/
          if(data.length()>16)
          {
             int init_add = address;
@@ -350,6 +376,8 @@ public class Memory{
             String new_inst = null;
             char [] new_data = data.toCharArray();	
             int value = data.length()/16;
+	   
+		m_util.Display_pcb(util.id);
 
             while (x <= value)
             {
@@ -368,18 +396,16 @@ public class Memory{
             memory[address] = data;
 
          }		
-      //}
-      //catch(Exception ex){
-      //}
+      }
+      catch(Exception ex){
+      }
       return 0;
    }
    //Read Function reads from memory
    String Read(int address){
 
       try{
-	if(address == 40){
-		System.out.println("memory[address] :"+memory[address]);
-	}
+
          return memory[address];
       }
       catch(Exception ex){
@@ -394,6 +420,12 @@ public class Memory{
       int temp = address;
       String line=null;
       int no_of_pages = m_util.pcb[id].no_of_pages;
+      /*int Total_no_of_pages = m_util.pcb[id].Total_no_of_pages;
+	if((address/8)>Total_no_of_pages){
+	     Er.Error_Handler_func("OUT_OF_RANGE_MEMORY_ACCESS");
+		return "null";
+
+	}*/	
       if(task.equals("READ"))
       {
          if(!data.equals("Input")){
@@ -459,8 +491,12 @@ public class Memory{
             }
          }
          address = BR + address;
+	try{
          Write(address,data);
-
+	}
+	catch(Exception e){
+	}
+	
       }
       return line;
    }

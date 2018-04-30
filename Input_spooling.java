@@ -18,6 +18,7 @@ public class Input_spooling{
    static BufferedReader br = null;
    static int save_load_address = 0;
    static  int check_size =0;
+   static  int count_val =0;
    Loader loader = new Loader(); 
    Error_Handler Er = new Error_Handler();
    Memory_util m_util = new Memory_util();
@@ -56,7 +57,7 @@ public class Input_spooling{
 	}
   }
 
-   void InputSpool(String filename)
+   int InputSpool(String filename)
          throws IOException,NumberFormatException,NoSuchElementException{
          try{
 	    
@@ -69,11 +70,13 @@ public class Input_spooling{
             CPU_util util = new CPU_util();
             boolean isNumeric = false;
             Disk disk = new Disk();
-	    if(save_load_address == 0){
+	    if(count_val == 0 && save_load_address ==0){
             fstream = new FileInputStream(filename);
             br = 
                new BufferedReader(new InputStreamReader(fstream));
+		count_val = count_val +1;
 	    }
+	    System.out.println("count_val :"+count_val);
 	    
 	    value = m_util.Memory_Available;	
             while(value > 0){
@@ -81,6 +84,7 @@ public class Input_spooling{
 	    value = m_util.Memory_Available;	
             x =0;
 	    id = m_util.id;
+	    util.Er_id = m_util.id;
 	    m_util.pcb[id].int_jobid = m_util.id;
             binary = null;
             line   = null;
@@ -93,9 +97,11 @@ public class Input_spooling{
 	    if(line == null)
             {
 		System.out.println("All jobs Done");
+		util.JOBS_FINISH = 1;
 		break;	       
               // Er.Error_Handler_func("INVALID_LOADER_FORMAT");
             }
+	    m_util.id++;
             String line1 = line;
             Scanner scan = new Scanner(line);
             scan.useDelimiter(" ");
@@ -103,10 +109,18 @@ public class Input_spooling{
             if(!(job.equals("**JOB")))
             {
                Er.Error_Handler_func("**JOB_Is_Missing");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }		
             if(scan.hasNext() == false)
             {
                Er.Error_Handler_func("INPUT_AND_OUTPUT_Size_MISSING");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
             int Input_seg_size = 0;
             try{
@@ -114,10 +128,18 @@ public class Input_spooling{
             }catch(NumberFormatException e)
             {	
                Er.Error_Handler_func("INVALID_INPUT_SEG_SIZE");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+	       return -1;
             }
             if(scan.hasNext() == false)
             {
                Er.Error_Handler_func("OUTPUT_SIZE_MISSING");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
             int Output_seg_size = 0;
             try{
@@ -125,6 +147,10 @@ public class Input_spooling{
             }catch(NumberFormatException e)
             {	
                Er.Error_Handler_func("INVALID_OUTPUT_SEG_SIZE");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
 
             line = br.readLine();
@@ -136,6 +162,10 @@ public class Input_spooling{
             if(job.equals("**JOB"))
             {
                Er.Error_Handler_func("MULTIPLE_**JOB_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
 
 
@@ -151,18 +181,30 @@ public class Input_spooling{
             }catch(NumberFormatException e)
             {	
                Er.Error_Handler_func("INVALID_JOBID_GIVEN");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
             try{
                load_address  = Integer.parseInt(scan1.next(), 16);
             }catch(NumberFormatException e)
             {	
                Er.Error_Handler_func("INVALID_LOAD_ADDRESS_GIVEN");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
             try{	
                Start_address = Integer.parseInt(scan1.next(), 16);
             }catch(NumberFormatException e)
             {	
                Er.Error_Handler_func("INVALID_START_ADDRESS_GIVEN");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
             try{
                SIZE          = Integer.parseInt(scan1.next(), 16);
@@ -170,11 +212,15 @@ public class Input_spooling{
             }catch(NumberFormatException e)
             {	
                Er.Error_Handler_func("INVALID_PROGRAM_SIZE_GIVEN");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
 	    size = SIZE/8;
 	    check_available_disk((size+(Input_seg_size/8)+1));
 	    load_address  = save_load_address;
-	    m_util.id++;
+	    //m_util.id++;
 	    m_util.pcb[id].int_jobid = id;
             m_util.pcb[id].Prog_seg_size  = SIZE;
             m_util.pcb[id].Input_seg_size = Input_seg_size;
@@ -191,11 +237,21 @@ public class Input_spooling{
                   (!trace_flag.equals("1")))
             {
                Er.Error_Handler_func("INVALID_TRACE_FLAG");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
-
-            m_util.pcb[id].trace_flag = Integer.parseInt(trace_flag); 
-	    
-
+	    try{
+	    m_util.pcb[id].trace_flag = Integer.parseInt(trace_flag); 
+	    }
+	    catch(Exception e){
+		Er.Error_Handler_func("INVALID_TRACE_FLAG");	
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
+	    }
 	    int base =0;
 
             while ((line = br.readLine()) != null){
@@ -207,6 +263,10 @@ public class Input_spooling{
                   if(job.equals("**JOB"))
                   {
                      Er.Error_Handler_func("MULTIPLE_**JOB_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+			return -1;
                   }
 
 
@@ -220,6 +280,12 @@ public class Input_spooling{
                   if(!isNumeric | (line.length()%4 != 0))
                   {
                      Er.Error_Handler_func("INVALID_LOADER_FORMAT");
+		while(!line.equals("**FIN")){
+		
+			line = br.readLine();
+		}
+			System.out.println("line :"+line);
+			return -1;
                   }
 
                   if (x==2)
@@ -242,16 +308,28 @@ public class Input_spooling{
                }catch(NoSuchElementException e)
                {
                   Er.Error_Handler_func("UNNECESSARY_BLANK_LINES_PRESENT_IN_LOADER_FORMAT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		  return -1;
                }	
             }
             if(line.equals("**OUTPUT")||
                   line.equals("**FIN"))
             {
                Er.Error_Handler_func("**INPUT_Is_Missing");		
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }	
             if(check_size > SIZE)
             {
                Er.Error_Handler_func("CONFLICT_NO_OF_WORDS_FOR_PROGRAM_SEGMENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }
 	    m_util.pcb[id].Prog_seg_size=check_size;
             String Prog_seg_last = disk.disk[load_address]; 
@@ -260,6 +338,10 @@ public class Input_spooling{
             if(line == null)
             {
                Er.Error_Handler_func("**INPUT_**OUTPUT_**FIN_Missing");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
 
             }
             m_util.pcb[id].DISK_PAGE_COUNT = load_address -1;
@@ -280,6 +362,10 @@ public class Input_spooling{
                if(job.equals("**JOB"))
                {
                   Er.Error_Handler_func("MULTIPLE_**JOB_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		  return -1;
                }
 		
                if ((x>2) && (line.length() >4))
@@ -293,6 +379,10 @@ public class Input_spooling{
                   if(count > 0)
                   {
                      Er.Error_Handler_func("MULTIPLE_**INPUT_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		     return -1;
                   }
                   count++;
                	  line2 = line;
@@ -302,12 +392,20 @@ public class Input_spooling{
 	       if(line == null)
 		{
 			Er.Error_Handler_func("**FIN_Is_Missing");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+			return -1;
 		}
                if(line.equals("**INPUT"))
                {
                   if(count > 0)
                   {
                      Er.Error_Handler_func("MULTIPLE_**INPUT_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+			return -1;
                   }
                   line2 = line;
                   line = br.readLine();
@@ -321,15 +419,27 @@ public class Input_spooling{
                if(job.equals("**JOB"))
                {
                   Er.Error_Handler_func("MULTIPLE_**JOB_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		  return -1;
                }
                if(job.equals("**INPUT"))
                {
                   Er.Error_Handler_func("MULTIPLE_**INPUT_PRESENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		  return -1;
                }
 
                if(temp.equals("**INPUT") && (line ==null | line.equals("**FIN")))
                {
                   Er.Error_Handler_func("INPUT_WORDS_MISSING");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		  return -1;
                }
                if(line == null | line.equals("**FIN") | line.equals("**OUTPUT"))
                {
@@ -342,6 +452,10 @@ public class Input_spooling{
                   if(!isNumeric | (line.length()%4 != 0))
                   {
                      Er.Error_Handler_func("INVALID_INPUT_FORMAT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+	   	     return -1;
                   }
                   check_size = check_size+(line.length()/4);
                }
@@ -357,12 +471,20 @@ public class Input_spooling{
                if(check_size != Input_seg_size)
                {
                   Er.Error_Handler_func("CONFLICT_NO_OF_WORDS_FOR_INPUT_SEGMENT");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		  return -1;
                }
             String Input_seg_last = disk.disk[load_address-1]; 
             	check_size = 5; 
             if(line == null)
             {	
                Er.Error_Handler_func("**FIN_IS_MISSING");
+		while(!line.equals("**FIN")){
+			line = br.readLine();
+		}
+		return -1;
             }	
             x = 0;
             load_address = load_address+1;
@@ -395,18 +517,16 @@ public class Input_spooling{
 		 output_pages = output_pages + 1;
 	      }
 	      m_util.pcb[id].Total_no_of_pages = (prog_pages + Inp_pages + output_pages);
-	      disk.available_space = disk.available_space - (prog_pages + Inp_pages);
+	      //disk.available_space = disk.available_space - (prog_pages + Inp_pages);
 		
-		    if(id ==8){
-				System.out.println("m_util.Memory_Available :"+m_util.Memory_Available);
-			}
 		 }
 		 }catch(IOException e){
 
 		    Er.Error_Handler_func("FILE_IS_EMPTY");
+			return -1;
 		 }
 
-
+		return 0;
 	   }
 
 }

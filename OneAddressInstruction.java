@@ -33,6 +33,7 @@ public class OneAddressInstruction{
          if(temp == null)
          {
             Er.Error_Handler_func("INVALID_MEMORY_ACCESS");
+            return 4;
 
          }
          if(temp.equals("stop"))
@@ -99,6 +100,7 @@ public class OneAddressInstruction{
             if(EA_value==0)
             {
                Er.Error_Handler_func("DIVIDE_BY_ZERO");	
+		return 4;
             }
             SO.Stack[SO.TOS] = AL.DIV(SO.Stack[SO.TOS],EA_value);
             break;
@@ -121,6 +123,7 @@ public class OneAddressInstruction{
             if(SO.TOS >= 6)
             {
                Er.Error_Handler_func("STACK_OVERFLOW");
+		return 4;
             }
             SO.Stack[SO.TOS+1] = AL.CPG(SO.Stack[SO.TOS],EA_value);
             SO.TOS = SO.TOS+1;
@@ -131,6 +134,7 @@ public class OneAddressInstruction{
             if(SO.TOS >= 6)
             {
                Er.Error_Handler_func("STACK_OVERFLOW");
+		return 4;
             }
             SO.Stack[SO.TOS+1] = AL.CPL(SO.Stack[SO.TOS],EA_value);
             SO.TOS = SO.TOS+1;
@@ -141,6 +145,7 @@ public class OneAddressInstruction{
             if(SO.TOS >= 6)
             {
                Er.Error_Handler_func("STACK_OVERFLOW");
+		return 4;
             }
             SO.Stack[SO.TOS+1] = AL.CPE(SO.Stack[SO.TOS],EA_value);
             SO.TOS = SO.TOS+1;
@@ -173,7 +178,10 @@ public class OneAddressInstruction{
          case "10010":
             //CALL Opcode
 	    System.out.println("CALL");
-            SO.PUSH(util.PC);
+            int er = SO.PUSH(util.PC);
+	    if(er == -1){
+		return 4;
+	    }
             util.PC = util.EA; 
             break;
          case "10011":
@@ -207,7 +215,7 @@ public class OneAddressInstruction{
          default:
             //Error Handler for INVALID_OPCODE
             Er.Error_Handler_func("INVALID_OPCODE");
-            break;
+	    return 4;
       }
       return value;
    }

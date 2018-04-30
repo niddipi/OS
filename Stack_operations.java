@@ -19,7 +19,7 @@ public class Stack_operations{
 		if (TOS >= 6)
 		{
 			Er.Error_Handler_func("STACK_OVERFLOW");
-			return 1;
+			return -1;
 		}
 		else if(TOS < 6)
 		{
@@ -36,7 +36,7 @@ public class Stack_operations{
 		 if (TOS < 0)
                 {
 			Er.Error_Handler_func("STACK_UNDERFLOW");
-                        return 1;
+                        return -1;
                 }
 		
 		value = Stack[TOS];

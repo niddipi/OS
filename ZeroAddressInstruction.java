@@ -164,6 +164,7 @@ public class ZeroAddressInstruction {
                if(inp_count >= m_util.pcb[id].Input_seg_size)
                {
                   Er.Error_Handler_func("READING_BEYOND_END_OF_FILE");
+		  return 4;
 	       }
 	       //System.out.println("util.address"+util.address);
 	       //System.out.println("util.pcb[0]"+m_util.pcb[0].Input_seg_info);
@@ -175,10 +176,15 @@ public class ZeroAddressInstruction {
 	       //System.out.println("Input :"+bin);
                input = (short)Integer.parseInt(bin, 2); 
                m_util.pcb[id].INPUT = m_util.pcb[id].INPUT+bin+"\n";
-               SO.PUSH(input);	
+               int er = SO.PUSH(input);	
+	      if(er == -1)
+		{
+			return 4;
+		}
                m_util.pcb[id].inp_count++;
             }catch(InputMismatchException ex){
                Er.Error_Handler_func("INVALID_INPUT");
+		return 4;
             }
             util.CLOCK = util.CLOCK+15;
 
@@ -203,8 +209,13 @@ public class ZeroAddressInstruction {
                if(out_count > m_util.Output_seg_size)
                {
                   Er.Error_Handler_func("WRITING_BEYOND_END_OF_FILE");
+		  return 4;
                }*/
                int val = (int) SO.POP();
+	       if(util.value == 4)
+		{
+			return 4;
+		}
 	
                temp = Integer.toBinaryString(val);
                temp = "0000000000000000"+temp;
@@ -253,7 +264,7 @@ public class ZeroAddressInstruction {
          default:
             //Error Handler for Invalid Opcode Exection
             Er.Error_Handler_func("INVALID_OPCODE");
-            break;
+	    return 4;
       }
       return value;
    }

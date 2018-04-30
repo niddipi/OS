@@ -142,17 +142,19 @@ void Display_Mem_Pages(){
 */
 
 public void Display_PCB(int id1){
-
-//while(i< id1)
-//{
-	System.out.println("id :"+id1+"Disk_base :"+pcb[id1].Disk_base);
-	System.out.println("id :"+id1+"PC_value :"+pcb[id1].PC);
-        int no_of_pages = pcb[id1].no_of_pages;
+int k = 0;
+  id1 = id;
+  while(k< id1)
+  {
+	System.out.println("id :"+k+"Disk_base :"+pcb[k].Disk_base);
+	System.out.println("id :"+k+"PC_value :"+pcb[k].PC);
+        int no_of_pages = pcb[k].no_of_pages;
         for(int i =0;i<no_of_pages;i++){
-		 System.out.println("frames :"+pcb[id1].frame_no[i]);
+		 System.out.println("frames :"+pcb[k].frame_no[i]);
 	}
-//}
-
+	System.out.println("id :"+k+"Error :"+pcb[k].Err);
+	k++;
+ }
 }
 void Display_Mem_Pages(){
 	int id =util.id;
@@ -168,5 +170,15 @@ void Display_Mem_Pages(){
         System.out.println("======================");
 }
 
+public void Display_pcb(int id1){
+int k = id;
+	System.out.println("id :"+k+"Disk_base :"+pcb[k].Disk_base);
+	System.out.println("id :"+k+"PC_value :"+pcb[k].PC);
+        int no_of_pages = pcb[k].no_of_pages;
+        for(int i =0;i<no_of_pages;i++){
+		 System.out.println("frames :"+pcb[k].frame_no[i]);
+	}
+	System.out.println("id :"+k+"Error :"+pcb[k].Err);
+}
 
 }

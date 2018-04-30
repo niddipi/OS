@@ -17,15 +17,16 @@ Memory_util m_util = new Memory_util();
 		System.out.println("util.id :"+util.id+"util.schedule_type :"+util.schedule_type);
 	}
 	int value = 0;
-	if(RUNNING_QUEUE == -1)
+	if(RUNNING_QUEUE == -1 && util.schedule_type == -1)
 	{
 		int i =0;
 		int no_of_jobs = m_util.id;
 		m_util.id_prev = m_util.id;
 		
 		while(i<no_of_jobs){
-							
+		     if(m_util.pcb[i].valid_pcb != -1){					
 	             READY_QUEUE.add(i);
+			}
 		     i++;
 		}
 		RUNNING_QUEUE = READY_QUEUE.get(0);
