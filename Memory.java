@@ -53,10 +53,6 @@ public class Memory{
   	int id = util.id;
 	int Base = m_util.pcb[id].Disk_base;
 	//Debugging method
-	if(Base == -1){
-		System.out.println("Base is not populated id:"+id);
-		Integer.parseInt(null, 2);
-	}
       util.CLOCK = util.CLOCK+10;	
       if(address ==24)
       {
@@ -105,23 +101,21 @@ public class Memory{
       if(code == 0)
       {
          Address = FH.Prog_Page_Fault_Handler(0,no_of_pages);
-	 data = new Disk().disk[Base+index];
+	 System.out.println("indexxxxxxxxxxxxxxxxx :"+m_util.pcb[id].Disk_PMT[index]);
+	 data = new Disk().disk[m_util.pcb[id].Disk_PMT[index]];
          temp = m_util.pcb[id].Page_Mem_order[Address].Page_loc;
          if(temp < (prog_pages+Inp_pages-1) && temp >0){
             m_util.pcb[id].Program_PMT[temp] = -1;}
          m_util.pcb[id].Page_Mem_order[Address].Page_loc = index;
+	    System.out.println("address :"+address+"id :"+id+" Input_seg_info:"+m_util.pcb[id].Input_seg_info);
+				new Disk().display_disk(12);
          m_util.pcb[id].Page_Mem_order[Address].word_count = (data.length()/4);
       }
       else if(code == 1)
       {
 	System.out.println("m_util.pcb[id].inp_count "+m_util.pcb[id].inp_count);
-	if(m_util.pcb[id].inp_count < 8){	
-         index = prog_pages+0; 
-	}
-	else
-	{
-		index = prog_pages+(m_util.pcb[id].inp_count/8);
-	}
+	System.out.println("m_util.pcb[id].index "+m_util.pcb[id].Disk_PMT[index]);
+	index = prog_pages+(m_util.pcb[id].inp_count/8);
          if( m_util.pcb[id].Input_seg_info < 0)
          {
             FH.Input_Seg_Fault_Handler(0);
@@ -133,7 +127,7 @@ public class Memory{
          {
             Address = FH.Input_Page_Fault_Handler(0);
          }
-         data = new Disk().disk[Base+index];
+         data = new Disk().disk[m_util.pcb[id].Disk_PMT[index]];
 		
 	 System.out.println("Inputdata "+data+"Index "+index+" Base :"+Base);
 	 
@@ -200,7 +194,7 @@ public class Memory{
       if(m_util.pcb[id].Page_Mem_order[Address].Dirty_bit == 1)
       {
 	System.out.println("Mem_address :"+Mem_address+" Address :"+Address);
-         Write_back_to_disk(Mem_address*8,Base+temp);
+         Write_back_to_disk(Mem_address*8,temp);
 	 new Disk().Disk_display();
          m_util.pcb[id].Page_Mem_order[Address].Dirty_bit  = 0;
       }
@@ -296,8 +290,8 @@ public class Memory{
          address++;
 
       } 
-
-      new Disk().disk[index] = data;
+	System.out.println("Baseid :"+util.id);
+      new Disk().disk[m_util.pcb[util.id].Disk_PMT[index]] = data;
 
    }
 
@@ -385,8 +379,6 @@ public class Memory{
             char [] new_data = data.toCharArray();	
             int value = data.length()/16;
 	   
-		m_util.Display_pcb(util.id);
-
             while (x <= value)
             {
                End = Start+15;
@@ -413,7 +405,7 @@ public class Memory{
    String Read(int address){
 
       try{
-
+	 System.out.println(memory[address]);
          return memory[address];
       }
       catch(Exception ex){
@@ -574,13 +566,11 @@ void Display_Mem(int add)
 {
 	add = add*8;
 	int i = 0;
-		System.out.println("$$$$$$$$$$$$$$");
 	while(i<8){
 
 		System.out.println(memory[add]);
 		add++;
 		i++;
 	}
-		System.out.println("$$$$$$$$$$$$$$");
 }
 }

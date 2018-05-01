@@ -63,13 +63,13 @@ public class Loader{
 			/*********Create Program Segment and Page
 			**********and Page map Table 		
 			********/
+			int loc = 0;
 			int temp = FH.Prog_Seg_Fault_Handler(0,no_of_pages);			
 			m_util.pcb[id].create_pmt(0,prog_pages);
 			
 			m_util.pcb[id].Program_seg_info = temp;
-			int begin = m_util.pcb[id].Disk_base;
+			int begin = m_util.pcb[id].Disk_PMT[loc];
 			line = DISK.disk[begin];
-			int loc = 0;
 			//int load_address = m_util.Free();
 			
 			int k = 0;
@@ -77,27 +77,19 @@ public class Loader{
 			while(k<no_of_pages)
 			{
 				val = m_util.Free();
-				if(val > 31)
-				{
-					System.out.println("Gone");
-					
-				}
 				m_util.pcb[id].frame_no[k] = val;
 				k++;
 			}
 			
 			int load_address =  m_util.check_avialable_page(id);
-			//m_util.Display_PCB(id);
+
 			System.out.println("line :: "+line+"load_address :"+load_address);
 			 
 			binary 	=  hexToBinary(line);
 
 			memory.Memory_func("Write",load_address,binary);
-			if(load_address ==0 && (m_util.id >4))
-			{
-				m_util.k = 1;
-			}
-			 memory.Display_Mem(load_address);
+
+
 			m_util.pcb[id].Page_frames[temp]      =  line;
 			m_util.pcb[id].Page_Mem_order[temp].Frame_base_address = load_address; 
 			m_util.pcb[id].Page_Mem_order[temp].Page_loc = 0; 

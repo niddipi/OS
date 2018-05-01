@@ -65,7 +65,6 @@ Memory_util m_util = new Memory_util();
 		if(m_util.id != m_util.id_prev){
 		m_util.id_prev = m_util.id;
 		READY_QUEUE.add(m_util.id-1);
-		m_util.Display_PCB(m_util.id-1);
 		}
 		int val = 0;
 		if(BLOCKED_QUEUE.size() > 0){

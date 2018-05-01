@@ -51,7 +51,7 @@ public class Input_spooling{
 
       int r = size;	
       Disk disk = new Disk();
-      if((disk.available_space - save_load_address)<r)
+      if((256 - save_load_address)<r)
 	{
 		save_load_address =0;
 	}
@@ -70,7 +70,7 @@ public class Input_spooling{
             CPU_util util = new CPU_util();
             boolean isNumeric = false;
             Disk disk = new Disk();
-	    if(count_val == 0 && save_load_address ==0){
+	    if(count_val == 0){
             fstream = new FileInputStream(filename);
             br = 
                new BufferedReader(new InputStreamReader(fstream));
@@ -83,6 +83,7 @@ public class Input_spooling{
 	    
 	    value = m_util.Memory_Available;	
             x =0;
+	    int index = 0;
 	    id = m_util.id;
 	    util.Er_id = m_util.id;
 	    m_util.pcb[id].int_jobid = m_util.id;
@@ -102,7 +103,6 @@ public class Input_spooling{
 		util.JOBS_FINISH = 1;
 		}
 		break;	       
-              // Er.Error_Handler_func("INVALID_LOADER_FORMAT");
             }
 	    m_util.id++;
             String line1 = line;
@@ -221,13 +221,48 @@ public class Input_spooling{
 		return -1;
             }
 	    size = SIZE/8;
-	    check_available_disk((size+(Input_seg_size/8)+1));
-	    load_address  = save_load_address;
-	    //m_util.id++;
 	    m_util.pcb[id].int_jobid = id;
             m_util.pcb[id].Prog_seg_size  = SIZE;
             m_util.pcb[id].Input_seg_size = Input_seg_size;
             m_util.pcb[id].Output_seg_size= Output_seg_size;
+
+	    /***********************************Disk Management*******************/
+	      int no_of_pages = m_util.pcb[id].no_of_pages;
+	      int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
+	      int output_pages = (m_util.pcb[id].Output_seg_size/8);
+	      int prog_pages = (m_util.pcb[id].Prog_seg_size/8);
+
+	      if(m_util.pcb[id].Prog_seg_size%8 != 0)
+	      {
+		 prog_pages = prog_pages + 1;
+	      }
+	      if(m_util.pcb[id].Input_seg_size%8 != 0)
+	      {
+		 Inp_pages = Inp_pages + 1;
+	      }
+	      if(m_util.pcb[id].Output_seg_size%8 != 0)
+	      {
+		 output_pages = output_pages + 1;
+	      }
+	      m_util.pcb[id].Total_no_of_pages = (prog_pages + Inp_pages + output_pages);
+	      m_util.pcb[id].Init_Disk_PMT(m_util.pcb[id].Total_no_of_pages);
+	    		int k = 0;
+                        int val =0;
+                        while(k<m_util.pcb[id].Total_no_of_pages)
+                        {
+                                val = disk.Free();
+                                m_util.pcb[id].disk_frame_no[k] = val;
+				System.out.println("m_util.pcb[id].disk_frame_no[k] :"+val);
+                                k++;
+                        }
+			disk.Disk_display();
+			System.out.println("********************************");
+			
+
+	    /************************************************************************/
+	    load_address  = disk.Check_avialable_page(id);
+	    m_util.pcb[id].Disk_PMT[index] =load_address;
+	    index++;
 
             m_util.pcb[id].JOBID         = JOBID;
             m_util.pcb[id].Start_address = Start_address;	
@@ -247,6 +282,9 @@ public class Input_spooling{
             }
 	    try{
 	    m_util.pcb[id].trace_flag = Integer.parseInt(trace_flag); 
+	    if(id == 12){
+		System.out.println("id :"+id+" "+m_util.pcb[id].trace_flag);
+	    }
 	    }
 	    catch(Exception e){
 		Er.Error_Handler_func("INVALID_TRACE_FLAG");	
@@ -293,7 +331,9 @@ public class Input_spooling{
 
                   if (x==2)
                   {
-                     load_address = load_address+1;
+                     load_address = disk.Check_avialable_page(id);
+	    m_util.pcb[id].Disk_PMT[index] =load_address;
+	    index++;
                      x = 0;
                   }
                   check_size = check_size+(line.length()/4);
@@ -335,6 +375,7 @@ public class Input_spooling{
 		return -1;
             }
 	    m_util.pcb[id].Prog_seg_size=check_size;
+	    System.out.println("load_address :"+load_address);
             String Prog_seg_last = disk.disk[load_address]; 
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+(Prog_seg_last.length()/4);
             int word_count = check_size;
@@ -347,9 +388,11 @@ public class Input_spooling{
 		return -1;
 
             }
-            m_util.pcb[id].DISK_PAGE_COUNT = load_address -1;
+            m_util.pcb[id].DISK_PAGE_COUNT = index;
             x = 0;
-            load_address = load_address+1;
+            load_address = disk.Check_avialable_page(id);
+	    m_util.pcb[id].Disk_PMT[index] =load_address;
+	    index++;
 
             check_size = 0;
             int count =0;
@@ -373,7 +416,9 @@ public class Input_spooling{
 		
                if ((x>2) && (line.length() >4))
                {
-                  load_address = load_address+1;
+                  load_address = disk.Check_avialable_page(id);
+	    	   m_util.pcb[id].Disk_PMT[index] =load_address;
+	    index++;
                   m_util.pcb[id].DISK_PAGE_COUNT = m_util.pcb[id].DISK_PAGE_COUNT+1;
                   x = 0;
                }
@@ -462,7 +507,9 @@ public class Input_spooling{
                   }
                   check_size = check_size+(line.length()/4);
 		  if(check_size > 8){
-			load_address = load_address +1;
+			load_address = disk.Check_avialable_page(id);
+	    		m_util.pcb[id].Disk_PMT[index] =load_address;
+	    		index++;
 		}
                }
 
@@ -482,7 +529,7 @@ public class Input_spooling{
 		}
 		  return -1;
                }
-            String Input_seg_last = disk.disk[load_address-1]; 
+            String Input_seg_last = disk.disk[load_address]; 
             	check_size = 5; 
             if(line == null)
             {	
@@ -493,37 +540,18 @@ public class Input_spooling{
 		return -1;
             }	
             x = 0;
-            load_address = load_address+1;
             loader.Loader_func(filename,1,id);	    
-	    save_load_address = load_address;
-
+	    disk.display_disk(id);
+	    System.out.println("load_address :"+load_address);
+	    if(Input_seg_last == null){
+		Input_seg_last = disk.disk[load_address-1];
+	   }
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+Input_seg_last.length()/4;
             m_util.pcb[id].DISK_FRAG = m_util.pcb[id].DISK_FRAG+Output_seg_size%8;
             m_util.pcb[id].DISK_FRAG = (24 - m_util.pcb[id].DISK_FRAG)/3;
             m_util.pcb[id].TOTAL_DISK_USAGE = word_count;
-            m_util.pcb[id].output_start_address = load_address+1;	
 		
 	    m_util.Memory_Available = m_util.Memory_Available-Page_Allocation(size); 
-	    /**disk Size calculation***/		
-		int no_of_pages = m_util.pcb[id].no_of_pages;
-	      int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
-	      int output_pages = (m_util.pcb[id].Output_seg_size/8);
-	      int prog_pages = (m_util.pcb[id].Prog_seg_size/8);
-
-	      if(m_util.pcb[id].Prog_seg_size%8 != 0)
-	      {
-		 prog_pages = prog_pages + 1;
-	      }
-	      if(m_util.pcb[id].Input_seg_size%8 != 0)
-	      {
-		 Inp_pages = Inp_pages + 1;
-	      }
-	      if(m_util.pcb[id].Output_seg_size%8 != 0)
-	      {
-		 output_pages = output_pages + 1;
-	      }
-	      m_util.pcb[id].Total_no_of_pages = (prog_pages + Inp_pages + output_pages);
-	      //disk.available_space = disk.available_space - (prog_pages + Inp_pages);
 		
 		 }
 		 }catch(IOException e){

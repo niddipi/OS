@@ -6,6 +6,8 @@
 *               data
 *
 *****************************************************************/
+import java.util.Arrays;
+
 public class PCB{
 
 	int JOBID = -1;
@@ -27,6 +29,7 @@ public class PCB{
 	int PageFaultNo = 0;
 	int[] Stack = new int[7];
 	int[] frame_no;
+	int[] disk_frame_no;
 	int[] Program_PMT;
 	int[] Input_PMT;
 	int[] Output_PMT;	
@@ -58,6 +61,8 @@ public class PCB{
 	int output_start_address = 0;	
 	int input_start_address  = 0;	
 	Page[] Page_Mem_order;
+	
+	int[] Disk_PMT;
 	
 /*	
 	public double MEM_utilword_ratio = 0.0;
@@ -101,5 +106,13 @@ public class PCB{
 		{
 			Output_PMT  = new int[no_pages];	
 		}
+	}
+
+	public void Init_Disk_PMT(int no_pages){
+		disk_frame_no = new int[no_pages];
+		Disk_PMT = new int[no_pages];
+		Arrays.fill(Disk_PMT, -1);
+		Arrays.fill(disk_frame_no, -1);
+
 	}
 }

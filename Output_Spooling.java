@@ -18,7 +18,6 @@ public class Output_Spooling{
 	Disk disk = new Disk();
    void Output_spool()
          throws IOException{
-         try{
             Memory memory = new Memory();
             Memory_util m_util = new Memory_util();
             memory.memory_Stats();
@@ -30,6 +29,7 @@ public class Output_Spooling{
             int index = 0;
             int dirty_bit = 0;
 		m_util.pcb[m_util.id-1].Departure_time =util.CPUCLOCK;
+       	    int Base = m_util.pcb[id].Disk_base;
 
             while(i<no_of_pages){
 	       
@@ -55,43 +55,35 @@ public class Output_Spooling{
                i++;
             }	
 	    m_util.Memory_Available = m_util.Memory_Available+no_of_pages;
-	   System.out.println("Output :");
-	    m_util.display_fmbv();
             outputFile();
-
-      int Base = m_util.pcb[id].Disk_base;
-      int Inp_pages = (m_util.pcb[id].Input_seg_size/8);
-      int output_pages = (m_util.pcb[id].Output_seg_size/8);
-      int prog_pages = (m_util.pcb[id].Prog_seg_size/8);
-
-      if(m_util.pcb[id].Prog_seg_size%8 != 0)
-      {
-         prog_pages = prog_pages + 1;
-      }
-      if(m_util.pcb[id].Input_seg_size%8 != 0)
-      {
-         Inp_pages = Inp_pages + 1;
-      }
-      if(m_util.pcb[id].Output_seg_size%8 != 0)
-      {
-         output_pages = output_pages + 1;
-      }
-      no_of_pages = prog_pages+Inp_pages+output_pages;
-      
-      i = 0;
-	if(Base != -1){
-      while(i<prog_pages+Inp_pages){
-	   disk.disk[Base+i] = "";	
-		i++;
-	}
-	}
-        m_util.pcb[id].valid_pcb = -1;
+	    no_of_pages = m_util.pcb[id].Total_no_of_pages;
+	    i =0;
+            while(i<no_of_pages){
+	       
+              if(m_util.pcb[id].Disk_PMT[i] >= 0){  
+		address = m_util.pcb[id].Disk_PMT[i];
+	       System.out.println("diskrelease id :="+id+" address :"+address); 
+	       disk.disk_fmbv[address] = 0;
+		disk.disk[address] = null;
+		}
+	    else{
+			if(m_util.pcb[id].disk_frame_no[i]>=0)
+			{
+	       			System.out.println("diskrelease id :="+id+" address :"+address); 
+				address = m_util.pcb[id].disk_frame_no[i];
+			       disk.disk_fmbv[address] = 0;
+				disk.disk[address] = null;
+				m_util.pcb[id].disk_frame_no[i] = -1;
+			}
+	    }
+               i++;
+            }	
+            m_util.pcb[id].valid_pcb = -1;
 	    
-         }catch(IOException e){
-         }
+	}
+	    
 
 
-   }
    /*****This function writes all required data
      to output device.
     *****/

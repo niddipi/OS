@@ -9,29 +9,14 @@ import java.util.*;
 import java.io.*;
 
 public class Disk{
+	
 
-	public static String[] disk = new String[2056];
+	public static String[] disk = new String[256];
 	
 	public static int BR = 0;//Base register
-	//Error_Handler Er = new Error_Handler();
-	static int available_space=2056;	
-/*
-	void check_avail_space(int required_space){
-
-		if(required_space > available_space)
-		{
-			try{
-				System.out.println("INSUFFICIENT_AVAILABLE_DISK_SPACE :"+required_space);
-				//Er.Error_Handler_func("INSUFFICIENT_AVAILABLE_DISK_SPACE");				
-
-			}
-			catch(Exception ex){
-			}
-
-			
-		}	
-	}
-*/
+	static int available_space=256;	
+	static int[] disk_fmbv = new int[256];
+	Memory_util m_util = new Memory_util();
 	//Write Function writes into disk
 	int Write(int address,String data){
 		try{
@@ -82,13 +67,72 @@ public class Disk{
 		int i =0;
 		while(i<256)
 		{
-			if(disk[i] == null)
-			{
-				break;
-			}
-			System.out.println(disk[i]);	
+			if(disk[i] != null){
+			System.out.println("index i: "+i+" "+disk[i]);}	
 			i++;
 		}	
 	}	
 
+
+/****This Function returns the immediate 
+     available memory Frame******/
+        public int Free()
+        {
+                int loc = 0;
+                while(loc !=256)
+                {
+                        if(disk_fmbv[loc] == 0){
+                                disk_fmbv[loc] =1;
+                                break;
+                        }
+                        loc++;
+                }
+                return loc;
+        }
+	
+/***********************************
+Check Available Page functions 
+checks for available page in memory
+************************************/
+
+int Check_avialable_page(int id1){
+        int no_of_pages = m_util.pcb[id1].Total_no_of_pages;
+        int k =0;
+        int value = -1;
+	
+        while(k<no_of_pages){
+
+		if(m_util.pcb[id1].disk_frame_no[k] != -1){
+			value =m_util.pcb[id1].disk_frame_no[k];
+			m_util.pcb[id1].disk_frame_no[k] = -1;
+			break;
+		}
+        	k++;
+        }
+        return value;
+}
+
+/***Initializes FMBV Vector****/
+public void Init_diskfmbv()
+        {
+                int i = 0;
+                while(i<256)
+                {
+                        disk_fmbv[i] = 0;
+                        i++;
+                }
+        }
+
+void display_disk(int id)
+	{
+		int i = 0;
+		while(i<m_util.pcb[id].Total_no_of_pages){
+		if(m_util.pcb[id].Disk_PMT[i] >= 0){
+		System.out.println("i :"+i+" "+"index"+m_util.pcb[id].Disk_PMT[i]+
+							disk[m_util.pcb[id].Disk_PMT[i]]);
+		}
+		i++;
+		}
+
+	}
 }

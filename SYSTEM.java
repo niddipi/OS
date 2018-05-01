@@ -42,6 +42,8 @@ public class SYSTEM
 		Memory m = new Memory();
 		Memory_util m_util = new Memory_util();
 	    	m_util.Init_fmbv();	
+		Disk disk = new Disk();
+		disk.Init_diskfmbv();
 		int val  = 0;
 		File f = new File("output_file.txt");
 		if(f.exists())

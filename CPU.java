@@ -170,6 +170,9 @@ public class CPU {
 				System.out.println("id == 4"+"Pages :"+m_util.pcb[id].no_of_pages);
 				m_util.Display_Mem_Pages();
 			}
+			if(m_util.id > 12){
+				new Disk().display_disk(12);
+			}
 			System.out.println("*********************************");
                         System.out.printf("\n\n\n");
 			 if(((util.CPUCLOCK - util.OLD_CPUCLOCK) >= 20)&& util.value == -1)
