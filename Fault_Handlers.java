@@ -94,7 +94,7 @@ public class Fault_Handlers{
 		m_util.Display_Mem_Pages();
 	}
 	
-      return jobid;
+      return 0;
    }
 
    /**This Function handles Output page Faults****/
@@ -104,7 +104,7 @@ public class Fault_Handlers{
 	int id = util.id;
         if(m_util.pcb[id].Output_seg_info == -1)
         {
-                 Address_of_PMT = jobid;
+                 Address_of_PMT = 0;
          
         }
         else

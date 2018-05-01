@@ -26,6 +26,7 @@ public class CPU_util{
 	public static String  OP = null;
 	public static int value = -1;
 	public static int inpvalue = -1;
+	public static int out_value = -1;
 	public static int JOBS_FINISH = -1;
 	
 	public static int schedule_type = -1;

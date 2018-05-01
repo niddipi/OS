@@ -90,25 +90,7 @@ int check_avialable_page(int id1){
     clock***/
 /*
 void Display_Mem_Pages(){
-	int no_of_pages = pcb[0].no_of_pages;
-	
-	int Inp_pages = (Input_seg_size/8);
-        int output_pages = (Output_seg_size/8);
-        int prog_pages = (Prog_seg_size/8);
-	int index =0;	
-	
-	if(Prog_seg_size%8 != 0)
-        {
-                prog_pages = prog_pages + 1;
-        }
-        if(Input_seg_size%8 != 0)
-        {
-                Inp_pages = Inp_pages + 1;
-        }
-        if(Output_seg_size%8 != 0)
-        {
-                output_pages = output_pages + 1;
-        }
+
 	for(int i =0;i<prog_pages;i++){
 		if(pcb[0].Program_PMT[i]>0)
 		{
@@ -159,12 +141,27 @@ int k = 0;
 void Display_Mem_Pages(){
 	int id =util.id;
         int no_of_pages = pcb[id].no_of_pages;
+	int Inp_pages = (pcb[id].Input_seg_size/8);
+        int output_pages = (pcb[id].Output_seg_size/8);
+        int prog_pages = (pcb[id].Prog_seg_size/8);
+	int index =0;	
+	
+	if(pcb[id].Prog_seg_size%8 != 0)
+        {
+                prog_pages = prog_pages + 1;
+        }
+        if(pcb[id].Input_seg_size%8 != 0)
+        {
+                Inp_pages = Inp_pages + 1;
+        }
+        if(pcb[id].Output_seg_size%8 != 0)
+        {
+                output_pages = output_pages + 1;
+        }
 
         for(int i =0;i<no_of_pages;i++){
         if(pcb[id].Page_Mem_order[i].Page_loc >= 0){
-
-  System.out.println("Page: "+pcb[id].Page_Mem_order[i].Page_loc+"  Frame-->"+pcb[id].Page_Mem_order[i].Frame_base_address);
-
+		
         }
         }
         System.out.println("======================");

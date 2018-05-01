@@ -374,6 +374,11 @@ public class Input_spooling{
 		}
 		return -1;
             }
+	    if(check_size < SIZE){
+			Memory_util.pcb[id].Warn =
+				"READ_LESS_NO_OF_WORDS_FOR_PROGRAM_SEGMENT";
+
+	    }
 	    m_util.pcb[id].Prog_seg_size=check_size;
 	    System.out.println("load_address :"+load_address);
             String Prog_seg_last = disk.disk[load_address]; 
@@ -521,7 +526,7 @@ public class Input_spooling{
 
             }
             word_count = word_count + check_size;
-               if(check_size != Input_seg_size)
+               if(check_size > Input_seg_size)
                {
                   Er.Error_Handler_func("CONFLICT_NO_OF_WORDS_FOR_INPUT_SEGMENT");
 		while(!line.equals("**FIN")){
@@ -529,6 +534,15 @@ public class Input_spooling{
 		}
 		  return -1;
                }
+
+ 	    if(check_size > Input_seg_size)
+               {
+			Memory_util.pcb[id].Warn =
+                                "READ_LESS_NO_OF_WORDS_FOR_INPUT_SEGMENT";
+
+
+		}	
+	      
             String Input_seg_last = disk.disk[load_address]; 
             	check_size = 5; 
             if(line == null)

@@ -224,11 +224,9 @@ public class Memory{
 	 String str = null;
          int x = 0;
          int Mem_add = Mem_address;
-	System.out.println("Mem_addressssssssssssss :"+Mem_address);
 	 while(count != 0)
 	{
               str = data.substring(0+(x * 4),4+(x * 4));
-              //System.out.println("str "+str);
 	      str = hexToBinary(str);
 	      if(str == null){
 			return -1;
@@ -247,8 +245,6 @@ public class Memory{
       }
       
      if(code !=1){
-	System.out.println("data :"+data+"code :"+code);
-	System.out.println("Mwwaddress :"+Mem_address);
       data = hexToBinary(data);
 	if(data == null)
 	{
@@ -291,7 +287,6 @@ public class Memory{
          address++;
 
       } 
-	System.out.println("Baseid :"+util.id);
 	if(m_util.pcb[util.id].Disk_PMT[index] >= 0){
       new Disk().disk[m_util.pcb[util.id].Disk_PMT[index]] = data;
 	}

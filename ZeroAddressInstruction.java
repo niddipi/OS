@@ -212,10 +212,12 @@ public class ZeroAddressInstruction {
             {
                util.value =2;
                util.address =0;
+		util.out_value = -1;
                return 0;	
             }
             else
             {
+		util.out_value = 0;
                if(m_util.pcb[id].out_count > m_util.pcb[id].Output_seg_size)
                {
                   Er.Error_Handler_func("WRITING_BEYOND_END_OF_FILE");
@@ -270,7 +272,9 @@ public class ZeroAddressInstruction {
 
          case "11000":
             //HLT Opcode Exection
+	   if(util.out_value != -1){
             util.value = 4;
+	 }
             break;
          default:
             //Error Handler for Invalid Opcode Exection

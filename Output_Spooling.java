@@ -115,22 +115,23 @@ public class Output_Spooling{
             }
               if(m_util.pcb[id].INPUT != null)
               {
-               str1=str1+"id :"+m_util.pcb[id].int_jobid+" INPUT(binary): "+
+               str1=str1+"JOBID(DECIMAL): "+m_util.pcb[id].JOBID+" INPUT(binary): "+
 						m_util.pcb[id].INPUT+"\n";	
               }
               else
               {
-                str1=str1+"id :"+m_util.pcb[id].int_jobid+
-				"INPUT: "+"NO AVAILABLE INPUT"+"\n";	
+                str1=str1+"JOBID(DECIMAL): "+m_util.pcb[id].JOBID+
+				" INPUT: "+"NO AVAILABLE INPUT"+"\n";	
              }
 
               if(m_util.pcb[id].OUTPUT != null)
              {
-               str1=str1+"id :"+m_util.pcb[id].int_jobid+" OUTPUT(binary): "+m_util.pcb[id].OUTPUT+"\n";	
+               str1=str1+"JOBID(DECIMAL): "+m_util.pcb[id].JOBID+
+				" OUTPUT(binary): "+m_util.pcb[id].OUTPUT+"\n";	
              }
              else
               {
-                str1=str1+"id :"+m_util.pcb[id].int_jobid+
+                str1=str1+"JOBID(DECIMAL): "+m_util.pcb[id].JOBID+
 				" OUTPUT: "+"NO AVAILABLE OUTPUT"+"\n";	
              }
             str1=str1+"Nature of Termination      : "+str+"\n";
