@@ -208,7 +208,7 @@ public class ZeroAddressInstruction {
             String temp = "";
 	    	System.out.println("WR");
 	   	 
-            /*if(m_util.pcb[0].Output_seg_info == -1)
+            if(m_util.pcb[id].Output_seg_info == -1)
             {
                util.value =2;
                util.address =0;
@@ -216,12 +216,11 @@ public class ZeroAddressInstruction {
             }
             else
             {
-               out_count++;
-               if(out_count > m_util.Output_seg_size)
+               if(m_util.pcb[id].out_count > m_util.pcb[id].Output_seg_size)
                {
                   Er.Error_Handler_func("WRITING_BEYOND_END_OF_FILE");
 		  return 4;
-               }*/
+               }
                int val = (int) SO.POP();
 	       if(util.value == 4)
 		{
@@ -238,7 +237,7 @@ public class ZeroAddressInstruction {
                int address = m_util.pcb[id].Output_seg_info;
                //new Memory().Write(address,OUTPUT); 
                m_util.pcb[id].Output_seg_info = m_util.pcb[id].Output_seg_info;
-            //}
+              }
 
             if(m_util.pcb[id].OUTPUT != null)
             {
@@ -251,6 +250,7 @@ public class ZeroAddressInstruction {
             util.CLOCK = util.CLOCK+15;
             util.IO_CLOCK = util.IO_CLOCK+15;
             value = 1;
+            m_util.pcb[id].out_count++;
             break;
 
          case "10101":

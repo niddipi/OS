@@ -22,6 +22,7 @@ public class PCB{
 	int TOS_Prev = -1;
 	int TOS_Val_Prev = -1;
 	int inp_count =0;
+	int out_count =0;
 	int Entry = 0;
 	int CLOCK =0;
 	int Arrival_time = 0;
