@@ -88,7 +88,6 @@ public class CPU {
 			{
 				util.EA = Integer.parseInt(DADDR, 2);
 			}
-			util.EA_Prev = util.EA;
 
 			OneAddressInstruction Exec_One_inst = 
 						new OneAddressInstruction();
@@ -163,8 +162,10 @@ public class CPU {
 				new Memory().Display_Mem(m_util.pcb[id].Page_Mem_order[0].Frame_base_address);
 
 			}
+			util.EA_Prev = util.EA;
 
 			util.PC = util.PC+1;
+			util.PC_Prev=util.PC; 
 			value = Decode_Execute(util.IR);
 			if(id == 0){
 				System.out.println("id == 4"+"Pages :"+m_util.pcb[id].no_of_pages);
