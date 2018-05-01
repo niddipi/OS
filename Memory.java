@@ -259,6 +259,9 @@ public class Memory{
 	{
 		return 0;	
 	}
+	if(data.length() == 16){
+	   Mem_address =Mem_address*8;
+	}
       Write(Mem_address,data);
       }
       m_util.pcb[id].Page_Mem_order[Address].Ref_bit =1;

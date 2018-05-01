@@ -165,7 +165,6 @@ public class CPU {
 			util.EA_Prev = util.EA;
 
 			util.PC = util.PC+1;
-			util.PC_Prev=util.PC; 
 			value = Decode_Execute(util.IR);
 			if(id == 0){
 				System.out.println("id == 4"+"Pages :"+m_util.pcb[id].no_of_pages);
