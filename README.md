@@ -24,13 +24,13 @@ Architecture supports a stack of 7 registers each of 16 bits size.
 S [ 7 : 0 ] <15 : 0>
 
 ZeroAddress Instruction Format:
+7  6  5  4  3  2  1   0
  ---------------------------
-  7  6  5  4  3  2  1   0
  | T | U  |      OPCODE     |
  ---------------------------
  One address Instruction Format:
- -----------------------------------------------
   5   4  3  2  1  0   9   8  7   6 5 4 3 2 1 0
+ -----------------------------------------------
  | T |    OPCODE     | X  |  U  |     DADDR    |
  -----------------------------------------------
  
@@ -78,3 +78,13 @@ Replacement Algorithm to bring required data into memory
 virtual address to physical address mapping
 Output Spooling.Writing the caluclated output to disk.
 
+phase 3.A Multiprogramming batch system with memory management.
+--------------------------------------------------------------
+
+In this phase we implemented a round robin algorithm scheduler for the CPU.
+
+The scheduler is called whenever the following scenarios happen:
+
+For every 20 vtu increment in clock.
+Page Fault handler is called
+Segment Fault handler is called.
