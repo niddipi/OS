@@ -24,13 +24,13 @@ Architecture supports a stack of 7 registers each of 16 bits size.
 S [ 7 : 0 ] <15 : 0>
 
 ZeroAddress Instruction Format:
-   7  6  5  4  3  2  1   0
  ---------------------------
+  7  6  5  4  3  2  1   0
  | T | U  |      OPCODE     |
  ---------------------------
  One address Instruction Format:
-   5   4  3  2  1  0   9   8  7   6 5 4 3 2 1 0
  -----------------------------------------------
+  5   4  3  2  1  0   9   8  7   6 5 4 3 2 1 0
  | T |    OPCODE     | X  |  U  |     DADDR    |
  -----------------------------------------------
  
